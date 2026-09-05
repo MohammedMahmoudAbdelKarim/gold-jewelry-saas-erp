@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: gold-jewelry-erp-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /api/v1
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: JWT_SECRET
+        generateValue: true
+      # No DB_HOST is set on purpose: Postgres isn't provisioned for this
+      # deployment, so the backend intentionally falls back to its built-in
+      # in-memory mock database (see core/database/database.service.ts).
+      # Data resets whenever the free-tier instance restarts or spins down
+      # from inactivity. Add DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME
+      # here (and provision a Postgres instance) to persist data instead.
