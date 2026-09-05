@@ -1,0 +1,15 @@
+@if (breadcrumbService.breadcrumbs().length) {
+  <nav class="app-breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      @for (item of breadcrumbService.breadcrumbs(); track $index) {
+        <li class="breadcrumb-item" [class.active]="!item.url">
+          @if (item.url) {
+            <a [routerLink]="item.url">{{ item.label }}</a>
+          } @else {
+            <span>{{ item.label }}</span>
+          }
+        </li>
+      }
+    </ol>
+  </nav>
+}

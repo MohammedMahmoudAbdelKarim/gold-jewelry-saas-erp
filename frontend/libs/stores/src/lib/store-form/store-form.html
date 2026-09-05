@@ -1,0 +1,136 @@
+<div class="create-container" [dir]="languageService.direction()">
+  <!-- Page Header -->
+  <div class="create-header">
+    <h2 class="page-title">{{ (isEditMode ? 'STORES.EDIT_STORE' : 'STORES.ADD_STORE') | translate }}</h2>
+    <p class="page-subtitle">
+      {{ 'STORES.SUBTITLE' | translate }}
+    </p>
+  </div>
+
+  @if (isLoading() && !isEditMode) {
+    <app-page-loader message="Preparing form data..." />
+  } @else {
+    <div class="form-card card-premium">
+      <form (submit)="saveStore()" class="premium-form">
+        <!-- Section: Store Details -->
+        <div class="form-section-title">
+          <i class="pi pi-map-marker"></i> {{ 'STORES.TITLE' | translate }}
+        </div>
+
+        <div class="row">
+          <!-- Store Name -->
+          <div class="col-md-6 form-group">
+            <label for="storeName">{{ 'STORES.NAME_LABEL' | translate }} <span class="required">*</span></label>
+            <input
+              type="text"
+              id="storeName"
+              name="storeName"
+              [ngModel]="formName()"
+              (ngModelChange)="formName.set($event)"
+              placeholder="e.g. Dubai Mall Branch"
+              required
+            />
+          </div>
+
+          <!-- Type -->
+          <div class="col-md-6 form-group">
+            <label for="storeType">{{ 'STORES.TYPE_LABEL' | translate }} <span class="required">*</span></label>
+            <select
+              id="storeType"
+              name="storeType"
+              [ngModel]="formType()"
+              (ngModelChange)="formType.set($event)"
+            >
+              <option value="retail">{{ 'STORES.RETAIL' | translate }}</option>
+              <option value="wholesale">{{ 'STORES.WHOLESALE' | translate }}</option>
+              <option value="warehouse">{{ 'STORES.WAREHOUSE' | translate }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Location Address -->
+          <div class="col-md-6 form-group">
+            <label for="storeLocation">{{ 'STORES.LOCATION_LABEL' | translate }}</label>
+            <div class="location-input-wrap">
+              <input
+                type="text"
+                id="storeLocation"
+                name="storeLocation"
+                [ngModel]="formLocation()"
+                (ngModelChange)="formLocation.set($event)"
+                placeholder="e.g. 25.204800, 55.270800"
+              />
+              <button 
+                type="button" 
+                class="btn-gps" 
+                (click)="useCurrentLocation()"
+                [title]="'STORES.GPS_BTN' | translate"
+              >
+                <i class="pi pi-compass"></i>
+                <span>{{ 'STORES.GPS_BTN' | translate }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Operational Status Switch -->
+          <div class="col-md-6 form-group">
+            <label>{{ 'STORES.STATUS_LABEL' | translate }}</label>
+            <div style="margin-top: 0.25rem;">
+              <button 
+                type="button" 
+                class="status-toggle-btn"
+                [class.active]="formIsActive()"
+                (click)="formIsActive.set(!formIsActive())"
+              >
+                <span class="toggle-dot"></span>
+                {{ (formIsActive() ? 'STORES.ACTIVE' : 'STORES.INACTIVE') | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Map Location Picker -->
+        <div class="row">
+          <div class="col-12 form-group">
+            <label>{{ 'STORES.MAP_LABEL' | translate }}</label>
+            <div id="map-picker-container" class="map-picker-card"></div>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        @if (errorMessage()) {
+          <div class="error-banner">
+            <i class="pi pi-exclamation-circle error-icon"></i>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        @if (successMessage()) {
+          <div class="success-banner">
+            <i class="pi pi-check-circle success-icon"></i>
+            <span>{{ successMessage() }}</span>
+          </div>
+        }
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="isLoading()">
+            <i class="pi pi-times"></i>
+            <span>{{ 'STORES.CANCEL' | translate }}</span>
+          </button>
+          
+          <button type="submit" class="btn-gold-submit" [disabled]="isLoading() || !formName().trim()">
+            @if (isLoading()) {
+              <i class="pi pi-spin pi-spinner"></i>
+              <span>{{ 'SETTINGS.SAVE' | translate }}...</span>
+            } @else {
+              <i class="pi pi-check"></i>
+              <span>{{ 'SETTINGS.SAVE' | translate }}</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

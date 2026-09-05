@@ -1,0 +1,86 @@
+<div class="login-container">
+  <div class="glass-login-card">
+    <div class="brand-header">
+      <div class="brand-logo-ring">
+        <i class="pi pi-star-fill logo-icon"></i>
+      </div>
+      <h1 class="brand-title">{{ 'AUTH.TITLE' | translate }}</h1>
+      <p class="brand-subtitle">{{ 'AUTH.SUBTITLE' | translate }}</p>
+    </div>
+
+    <form (submit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="tenantId">{{ 'AUTH.TENANT' | translate }}</label>
+        <div class="input-wrapper">
+          <i class="pi pi-briefcase input-icon"></i>
+          <input
+            type="text"
+            id="tenantId"
+            name="tenantId"
+            [ngModel]="tenantId()"
+            (ngModelChange)="tenantId.set($event)"
+            placeholder="e.g. e1a7b445-568d-4e96-a1ad-4672bb192bb3"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">{{ 'AUTH.EMAIL' | translate }}</label>
+        <div class="input-wrapper">
+          <i class="pi pi-envelope input-icon"></i>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            placeholder="cashier@test.com"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">{{ 'AUTH.PASSWORD' | translate }}</label>
+        <div class="input-wrapper">
+          <i class="pi pi-lock input-icon"></i>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="error-banner">
+          <i class="pi pi-exclamation-circle error-icon"></i>
+          <span>{{ errorMessage() | translate }}</span>
+        </div>
+      }
+
+      <button type="submit" class="btn-login-gold" [disabled]="isLoading()">
+        @if (isLoading()) {
+          <i class="pi pi-spin pi-spinner button-loading-icon"></i>
+          {{ 'AUTH.SIGN_IN' | translate }}...
+        } @else {
+          {{ 'AUTH.SIGN_IN' | translate }}
+        }
+      </button>
+    </form>
+
+    <div class="divider">
+      <span>{{ 'AUTH.MOCK_CASHIER' | translate }}</span>
+    </div>
+
+    <button type="button" class="btn-mock-cashier" (click)="fillMockCredentials()">
+      <i class="pi pi-user-plus icon-mock"></i>
+      {{ 'AUTH.MOCK_CASHIER' | translate }}
+    </button>
+  </div>
+</div>

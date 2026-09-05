@@ -1,0 +1,153 @@
+@if (isLoading()) {
+  <app-page-loader [minHeight]="'200px'" />
+} @else if (errorMessage()) {
+  <div class="error-banner">
+    <i class="pi pi-exclamation-circle error-icon"></i>
+    <span>{{ errorMessage() | translate }}</span>
+  </div>
+} @else {
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            @for (col of columns(); track col.key) {
+              <th 
+                [class.text-end]="col.align === 'right'" 
+                [class.text-center]="col.align === 'center'"
+              >
+                {{ col.header | translate }}
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of paginatedItems(); track row.id || $index) {
+            <tr>
+              @for (col of columns(); track col.key) {
+                <td 
+                  [class.text-end]="col.align === 'right'" 
+                  [class.text-center]="col.align === 'center'"
+                >
+                  @if (getTemplate(col.key)) {
+                    <ng-container 
+                      [ngTemplateOutlet]="getTemplate(col.key)!" 
+                      [ngTemplateOutletContext]="{ $implicit: row, column: col }"
+                    ></ng-container>
+                  } @else {
+                    @if (col.type === 'status') {
+                      <span
+                        class="status-pill"
+                        [class.status-instock]="row[col.key] === 'in_stock' || row[col.key] === 'active' || row[col.key] === true"
+                        [class.status-reserved]="row[col.key] === 'reserved'"
+                        [class.status-sold]="row[col.key] === 'sold' || row[col.key] === 'suspended' || row[col.key] === false"
+                      >
+                        {{ getStatusLabel(row[col.key]) | translate }}
+                      </span>
+                    } @else if (col.type === 'currency') {
+                      EGP {{ row[col.key] | number:'1.2-2' }}
+                    } @else {
+                      {{ row[col.key] }}
+                    }
+                  }
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="columns().length" class="empty-row">
+                <i class="pi pi-inbox empty-icon"></i>
+                <p>{{ noItemsMessage() | translate }}</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    @if (data().length > 0) {
+      <div class="pagination-container">
+        <!-- Page size dropdown selector -->
+        <div class="page-size-selector">
+          <div class="custom-select-wrapper">
+            <select 
+              id="pageSizeSelect" 
+              [ngModel]="pageSize()" 
+              (ngModelChange)="onPageSizeChange(+$event)"
+            >
+              @for (opt of pageSizeOptions(); track opt) {
+                <option [value]="opt">{{ opt }}</option>
+              }
+            </select>
+            <i class="pi pi-chevron-down select-chevron"></i>
+          </div>
+          <span class="page-size-label">{{ languageService.currentLanguage() === 'ar' ? 'عنصر لكل صفحة' : 'items/page' }}</span>
+        </div>
+
+        <!-- Pagination Page Buttons -->
+        <div class="pagination-buttons">
+          <!-- First Page Button (<<) -->
+          <button 
+            type="button" 
+            class="btn-page-nav" 
+            [disabled]="currentPage() === 1" 
+            (click)="setPage(1)"
+            title="First Page"
+          >
+            <i class="pi pi-angle-double-right" *ngIf="languageService.currentLanguage() === 'ar'"></i>
+            <i class="pi pi-angle-double-left" *ngIf="languageService.currentLanguage() !== 'ar'"></i>
+          </button>
+
+          <!-- Prev Page Button (<) -->
+          <button 
+            type="button" 
+            class="btn-page-nav" 
+            [disabled]="currentPage() === 1" 
+            (click)="prevPage()"
+            title="Previous Page"
+          >
+            <i class="pi pi-angle-right" *ngIf="languageService.currentLanguage() === 'ar'"></i>
+            <i class="pi pi-angle-left" *ngIf="languageService.currentLanguage() !== 'ar'"></i>
+          </button>
+
+          <!-- Page Number Links -->
+          @for (page of pageNumbers(); track page) {
+            <button 
+              type="button" 
+              class="btn-page-num" 
+              [class.active]="currentPage() === page"
+              (click)="setPage(page)"
+            >
+              {{ page }}
+            </button>
+          }
+
+          <!-- Next Page Button (>) -->
+          <button 
+            type="button" 
+            class="btn-page-nav" 
+            [disabled]="currentPage() === totalPages()" 
+            (click)="nextPage()"
+            title="Next Page"
+          >
+            <i class="pi pi-angle-left" *ngIf="languageService.currentLanguage() === 'ar'"></i>
+            <i class="pi pi-angle-right" *ngIf="languageService.currentLanguage() !== 'ar'"></i>
+          </button>
+
+          <!-- Last Page Button (>>) -->
+          <button 
+            type="button" 
+            class="btn-page-nav" 
+            [disabled]="currentPage() === totalPages()" 
+            (click)="setPage(totalPages())"
+            title="Last Page"
+          >
+            <i class="pi pi-angle-double-left" *ngIf="languageService.currentLanguage() === 'ar'"></i>
+            <i class="pi pi-angle-double-right" *ngIf="languageService.currentLanguage() !== 'ar'"></i>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+}

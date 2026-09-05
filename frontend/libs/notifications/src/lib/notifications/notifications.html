@@ -1,0 +1,58 @@
+<div class="notifications-container" [dir]="langService.direction()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2 class="page-title">
+        <i class="pi pi-bell"></i>
+        {{ 'NOTIFICATIONS.TITLE' | translate }}
+        @if (unreadCount() > 0) {
+          <span class="unread-count-badge">{{ unreadCount() }}</span>
+        }
+      </h2>
+      <p class="page-subtitle">{{ 'NOTIFICATIONS.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-secondary" [disabled]="unreadCount() === 0" (click)="markAllAsRead()">
+        <i class="pi pi-check-square"></i>
+        <span>{{ 'NOTIFICATIONS.MARK_ALL_READ' | translate }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="feed-card">
+    @if (isLoading()) {
+      <app-page-loader></app-page-loader>
+    } @else if (errorMessage()) {
+      <div class="error-banner">
+        <i class="pi pi-exclamation-circle"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    } @else if (notifications().length === 0) {
+      <div class="empty-state">
+        <i class="pi pi-bell empty-icon"></i>
+        <h3>{{ 'NOTIFICATIONS.NO_NOTIFICATIONS' | translate }}</h3>
+      </div>
+    } @else {
+      <div class="notification-list">
+        @for (n of notifications(); track n.id) {
+          <div class="notification-row" [class.unread]="!n.is_read" (click)="markAsRead(n)">
+            <div class="notif-icon-wrap" [class]="n.type">
+              <i class="pi" [class]="typeIcon[n.type]"></i>
+            </div>
+            <div class="notif-content">
+              <span class="notif-title">{{ n.title }}</span>
+              <p class="notif-message">{{ n.message }}</p>
+              <span class="notif-time">{{ n.created_at | date: 'medium' }}</span>
+            </div>
+            @if (!n.is_read) {
+              <span class="unread-dot"></span>
+            }
+            <button type="button" class="btn-remove" (click)="$event.stopPropagation(); deleteNotification(n.id)">
+              <i class="pi pi-times"></i>
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

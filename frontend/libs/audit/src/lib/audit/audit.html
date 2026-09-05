@@ -1,0 +1,66 @@
+<div class="audit-container" [dir]="langService.direction()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2 class="page-title">
+        <i class="pi pi-history"></i>
+        {{ 'AUDIT.TITLE' | translate }}
+      </h2>
+      <p class="page-subtitle">{{ 'AUDIT.SUBTITLE' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- Controls Bar -->
+  <div class="controls-bar">
+    <div class="search-box">
+      <i class="pi pi-search search-icon"></i>
+      <input
+        type="text"
+        [placeholder]="'TOOLBAR.SEARCH' | translate"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="table-card">
+    <app-shared-table
+      [data]="filteredEntries()"
+      [columns]="tableColumns"
+      [isLoading]="isLoading()"
+      [errorMessage]="errorMessage()"
+      [(currentPage)]="currentPage"
+      [(pageSize)]="pageSize"
+      noItemsMessage="AUDIT.NO_ENTRIES"
+    >
+      <!-- Date custom template -->
+      <ng-template appCellTemplate="created_at" let-entry>
+        <span class="phone-text">{{ entry.created_at | date: 'medium' }}</span>
+      </ng-template>
+
+      <!-- User custom template -->
+      <ng-template appCellTemplate="user_email" let-entry>
+        <span class="user-email-text">{{ entry.user_email }}</span>
+      </ng-template>
+
+      <!-- Action custom template -->
+      <ng-template appCellTemplate="action" let-entry>
+        <span class="action-badge" [class]="entry.action">
+          <i class="pi" [class]="actionIcon[entry.action] || 'pi-circle'"></i>
+          {{ entry.action }}
+        </span>
+      </ng-template>
+
+      <!-- Entity custom template -->
+      <ng-template appCellTemplate="entity_type" let-entry>
+        <span class="phone-text">{{ entry.entity_type }}</span>
+      </ng-template>
+
+      <!-- Details custom template -->
+      <ng-template appCellTemplate="details" let-entry>
+        <span class="details-text">{{ entry.details || '—' }}</span>
+      </ng-template>
+    </app-shared-table>
+  </div>
+</div>

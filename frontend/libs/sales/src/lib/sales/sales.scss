@@ -1,0 +1,763 @@
+/* ═══════════════════════════════════════════
+   POS Cashier – theme-aware (light + dark)
+   All surfaces derive from theme tokens so the
+   page follows the user's configured theme.
+   ═══════════════════════════════════════════ */
+
+.pos-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-height: calc(100vh - 80px);
+}
+
+/* ─── Top Bar ─── */
+.pos-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.topbar-rate {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  background: var(--color-primary-glow);
+  border: 1px solid rgba(205, 156, 32, 0.2);
+  border-radius: 10px;
+
+  .pulse-gold {
+    color: var(--color-primary);
+    animation: pulse-glow 2s infinite;
+  }
+
+  .rate-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    white-space: nowrap;
+  }
+
+  .rate-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .rate-input {
+    width: 70px;
+    background: transparent;
+    border: none !important;
+    border-bottom: 1px dashed var(--color-primary) !important;
+    border-radius: 0 !important;
+    color: var(--color-primary) !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    text-align: center;
+    padding: 0 !important;
+    outline: none;
+
+    &:focus {
+      border-bottom-style: solid !important;
+      box-shadow: none !important;
+    }
+  }
+
+  .rate-unit {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+}
+
+/* ─── Body 2-Col Layout ─── */
+.pos-body {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  flex: 1;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pos-left, .pos-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ─── Scanner Card ─── */
+.scanner-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scanner-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.scanner-input-box {
+  flex: 1;
+  position: relative;
+
+  .scanner-ico {
+    position: absolute;
+    inset-inline-start: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    font-size: 1rem;
+  }
+
+  input {
+    width: 100%;
+    // Logical padding so the text clears the icon on whichever side
+    // `inset-inline-start` places it (physical padding clipped it in RTL).
+    padding-block: 0.75rem !important;
+    padding-inline-start: 2.5rem !important;
+    padding-inline-end: 1rem !important;
+    background: var(--color-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--color-text);
+    font-size: 0.85rem;
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    &:focus {
+      border-color: var(--color-primary) !important;
+      box-shadow: 0 0 0 3px var(--color-primary-glow) !important;
+    }
+  }
+}
+
+.btn-scan-action {
+  width: 46px;
+  height: 46px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+  }
+}
+
+.scan-error {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.12);
+  border-radius: 8px;
+  color: var(--color-danger);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* ─── Cart Card ─── */
+.cart-card {
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: var(--box-shadow-premium);
+  overflow: hidden;
+  flex: 1;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid var(--border-color);
+
+  h3 {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    i { color: var(--color-text-muted); font-size: 0.85rem; }
+  }
+
+  .cart-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 0.35rem;
+    background: var(--color-primary-glow);
+    border: 1px solid rgba(205, 156, 32, 0.2);
+    border-radius: 6px;
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+}
+
+.cart-items-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 420px;
+}
+
+// Shared grid template for the invoice-style cart header + rows
+.cart-table-head,
+.cart-row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 52px 64px 100px 32px;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.15rem;
+}
+
+.cart-table-head {
+  padding-block: 0.5rem;
+  background: var(--color-surface-hover);
+  border-bottom: 1px solid var(--border-color);
+
+  span {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+  }
+}
+
+.cart-row {
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.1s ease;
+
+  &:hover {
+    background: var(--color-primary-glow);
+  }
+
+  &:last-child { border-bottom: none; }
+
+  .col-num {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  .col-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    .item-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .meta-barcode {
+      font-size: 0.6rem;
+      font-family: monospace;
+      color: var(--color-text-muted);
+      margin-top: 0.1rem;
+    }
+  }
+
+  .meta-karat {
+    display: inline-block;
+    padding: 0.05rem 0.3rem;
+    background: var(--color-primary-glow);
+    border-radius: 3px;
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.65rem;
+  }
+
+  .col-weight {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .item-price {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    white-space: nowrap;
+  }
+}
+
+.text-end { text-align: end; }
+
+.btn-remove {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.15);
+    color: var(--color-danger);
+  }
+}
+
+.cart-empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 1rem;
+
+  .empty-icon-wrap {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: var(--color-primary-glow);
+    border: 1px solid rgba(205, 156, 32, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    i {
+      font-size: 1.6rem;
+      color: var(--color-primary);
+    }
+
+    // Soft halo to draw the cashier's eye to the scan action
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1px solid rgba(205, 156, 32, 0.12);
+      animation: pulse-halo 2.4s ease-in-out infinite;
+    }
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-align: center;
+    max-width: 300px;
+    line-height: 1.6;
+  }
+}
+
+@keyframes pulse-halo {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.08); opacity: 0.35; }
+}
+
+/* ─── Live Invoice Panel (unifies buyback + checkout summary into one ticket) ─── */
+.invoice-panel {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow-premium);
+  border-radius: 14px;
+  padding: 1.5rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden;
+
+  // Gold cap marks this card as the live invoice without depending on a dark background
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), #e5b233, var(--color-primary));
+  }
+}
+
+.invoice-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+
+  .invoice-panel-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-primary);
+    margin-bottom: 0.15rem;
+  }
+
+  .invoice-panel-branch {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .invoice-panel-meta {
+    text-align: end;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+  }
+
+  .draft-badge {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 5px;
+    background: var(--color-surface-hover);
+    border: 1px solid var(--border-color);
+    color: var(--color-text-muted);
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .invoice-panel-date {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+  }
+}
+
+.invoice-panel-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+
+  .s-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-text-muted);
+    }
+
+    select {
+      width: 100%;
+      padding: 0.45rem 0.55rem !important;
+      font-size: 0.78rem !important;
+      option {
+        background: var(--color-surface);
+        color: var(--color-text);
+      }
+    }
+  }
+}
+
+.invoice-panel-section {
+  .section-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-text-muted);
+
+      i { color: var(--color-primary); }
+    }
+  }
+
+  .btn-add-bb {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary-glow);
+    border: 1px solid rgba(205, 156, 32, 0.25);
+    border-radius: 6px;
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: rgba(205, 156, 32, 0.15);
+    }
+  }
+
+  .buyback-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .bb-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    select, input {
+      flex: 1;
+      padding: 0.35rem 0.45rem !important;
+      font-size: 0.75rem !important;
+    }
+
+    select option {
+      background: var(--color-surface);
+      color: var(--color-text);
+    }
+
+    .bb-value {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--color-danger);
+      white-space: nowrap;
+      min-width: 70px;
+      text-align: end;
+    }
+
+    .btn-remove-bb {
+      background: transparent;
+      border: none;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      font-size: 0.7rem;
+      padding: 0.2rem;
+      &:hover { color: var(--color-danger); }
+    }
+  }
+
+  .bb-empty {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    margin: 0;
+  }
+}
+
+.invoice-divider-dashed {
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.invoice-panel-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .total-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    span:last-child { color: var(--color-text); font-weight: 500; }
+  }
+
+  .discount-line span:last-child {
+    color: var(--color-danger) !important;
+  }
+
+  .total-line-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+
+    input {
+      width: 80px;
+      padding: 0.25rem 0.4rem !important;
+      text-align: end;
+      font-size: 0.78rem !important;
+    }
+  }
+
+  .grand-total-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.2rem;
+
+    span:first-child {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .grand-amount {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      letter-spacing: -0.02em;
+    }
+  }
+}
+
+.btn-checkout-full {
+  width: 100%;
+  padding: 0.85rem !important;
+  font-size: 0.9rem !important;
+}
+
+/* ─── Receipt Modal ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.invoice-receipt-card {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  border-radius: 16px;
+  overflow: hidden;
+  animation: invoice-enter 0.3s ease-out;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), #e5b233, var(--color-primary));
+  }
+
+  @keyframes invoice-enter {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem 1.75rem 1rem;
+    gap: 1rem;
+  }
+
+  .invoice-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .brand-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--color-primary-glow);
+      border: 1px solid rgba(205, 156, 32, 0.25);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-primary); font-size: 1.1rem;
+    }
+    .brand-name { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--color-text); }
+    .brand-address { margin: 0; font-size: 0.7rem; color: var(--color-text-muted); }
+  }
+
+  .invoice-meta {
+    text-align: end;
+    .invoice-tag { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-primary); margin-bottom: 0.15rem; }
+    .invoice-num { font-size: 0.95rem; font-weight: 700; color: var(--color-text); font-family: monospace; }
+    .invoice-date { font-size: 0.7rem; color: var(--color-text-muted); }
+  }
+
+  .invoice-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(205, 156, 32, 0.2), transparent); margin: 0 1.75rem; }
+  .invoice-divider-dashed { border-bottom: 1px dashed var(--border-color); margin: 0.4rem 0; }
+
+  .invoice-info-row {
+    display: flex; gap: 2rem; padding: 0.85rem 1.75rem;
+    .info-block { display: flex; flex-direction: column; gap: 0.1rem; }
+    .info-label { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); }
+    .info-value { font-size: 0.8rem; font-weight: 600; color: var(--color-text); }
+  }
+
+  .invoice-items-section { padding: 0 1.75rem; }
+
+  .invoice-table {
+    width: 100%; border-collapse: collapse; font-size: 0.75rem;
+    th { padding: 0.5rem 0.6rem; background: var(--color-surface-hover); border-bottom: 1px solid var(--border-color); color: var(--color-text-muted); font-weight: 600; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border-color); color: var(--color-text); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    .col-num { width: 32px; text-align: center; color: var(--color-text-muted); }
+    .line-name { display: block; font-weight: 600; font-size: 0.78rem; }
+    .line-barcode { display: block; font-size: 0.6rem; font-family: monospace; color: var(--color-text-muted); margin-top: 0.1rem; }
+    .line-price { font-weight: 700; color: var(--color-primary); }
+    .karat-badge { padding: 0.15rem 0.35rem; background: var(--color-primary-glow); border: 1px solid rgba(162,124,56,0.2); border-radius: 4px; color: var(--color-primary); font-weight: 700; font-size: 0.6rem; }
+  }
+
+  .invoice-totals {
+    display: flex; flex-direction: column; gap: 0.45rem; padding: 0.85rem 1.75rem;
+    background: var(--color-surface-hover); border-top: 1px solid var(--border-color);
+    .total-line { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--color-text-muted); span:last-child { color: var(--color-text); font-weight: 500; } }
+    .discount-line span:last-child { color: var(--color-danger); }
+    .grand-total-line { display: flex; justify-content: space-between; align-items: center; padding-top: 0.4rem; span:first-child { font-size: 0.85rem; font-weight: 700; color: var(--color-text); } .grand-amount { font-size: 1.35rem; font-weight: 800; color: var(--color-primary); letter-spacing: -0.02em; } }
+  }
+
+  .invoice-footer { text-align: center; padding: 0.75rem 1.75rem; border-top: 1px solid var(--border-color); p { margin: 0; font-size: 0.7rem; color: var(--color-text-muted); font-style: italic; } }
+
+  .invoice-actions {
+    display: flex; gap: 0.75rem; padding: 0.85rem 1.75rem 1.25rem;
+    button { flex: 1; padding: 0.6rem; font-size: 0.8rem; font-weight: 600; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.35rem; transition: all 0.15s ease; }
+    .btn-receipt-print { background: var(--color-surface-hover); border: 1px solid var(--border-color); color: var(--color-text); &:hover { background: var(--color-primary-glow); border-color: var(--color-primary); } }
+    .btn-receipt-close { background: var(--color-primary); border: none; color: #fff; &:hover { background: var(--color-primary-hover); } }
+  }
+}
+
+/* ─── Keyframes ─── */
+@keyframes pulse-glow {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}

@@ -1,0 +1,95 @@
+{
+  "name": "gold-erp",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/gold-erp/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/gold-erp",
+        "browser": "apps/gold-erp/src/main.ts",
+        "tsConfig": "apps/gold-erp/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/gold-erp/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "node_modules/leaflet/dist/images",
+            "output": "assets/leaflet/images"
+          },
+          {
+            "glob": "leaflet.css",
+            "input": "node_modules/leaflet/dist",
+            "output": "assets/leaflet"
+          }
+        ],
+        "styles": [
+          "node_modules/bootstrap/dist/css/bootstrap.min.css",
+          "node_modules/primeicons/primeicons.css",
+          "apps/gold-erp/src/styles.scss"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "3mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "16kb",
+              "maximumError": "32kb"
+            }
+          ],
+          "outputHashing": "all",
+          "serviceWorker": "apps/gold-erp/ngsw-config.json"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "apps/gold-erp/proxy.conf.json"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "gold-erp:build:production"
+        },
+        "development": {
+          "buildTarget": "gold-erp:build:development"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "gold-erp:build",
+        "staticFilePath": "dist/apps/gold-erp/browser",
+        "spa": true
+      }
+    }
+  }
+}

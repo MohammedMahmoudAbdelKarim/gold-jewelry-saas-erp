@@ -1,0 +1,140 @@
+<div class="stores-container" [dir]="langService.direction()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2 class="page-title">
+        <i class="pi pi-map-marker"></i>
+        {{ 'STORES.TITLE' | translate }}
+      </h2>
+      <p class="page-subtitle">{{ 'STORES.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="new" class="btn-primary" style="text-decoration: none;">
+        <i class="pi pi-plus"></i>
+        <span>{{ 'STORES.ADD_STORE' | translate }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  @if (successMessage()) {
+    <div class="toast-message success">
+      <i class="pi pi-check-circle"></i>
+      <span>{{ successMessage()! | translate }}</span>
+    </div>
+  }
+  @if (errorMessage()) {
+    <div class="toast-message error">
+      <i class="pi pi-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Controls Bar -->
+  <div class="controls-bar">
+    <div class="search-box">
+      <i class="pi pi-search search-icon"></i>
+      <input
+        type="text"
+        [placeholder]="'TOOLBAR.SEARCH' | translate"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="table-card">
+    <app-shared-table
+      [data]="filteredStores()"
+      [columns]="tableColumns"
+      [isLoading]="isLoading()"
+      [errorMessage]="errorMessage()"
+      [(currentPage)]="currentPage"
+      [(pageSize)]="pageSize"
+      noItemsMessage="STORES.NO_STORES"
+    >
+        <!-- Store Name custom template -->
+        <ng-template appCellTemplate="name" let-store>
+          <div class="store-cell">
+            <div class="store-icon-wrap" [class]="store.branch_type">
+              <i class="pi" [ngClass]="store.branch_type === 'warehouse' ? 'pi-database' : 'pi-home'"></i>
+            </div>
+            <span class="store-name-text">{{ store.name }}</span>
+          </div>
+        </ng-template>
+
+        <!-- Branch Type custom template -->
+        <ng-template appCellTemplate="branch_type" let-store>
+          <span class="type-badge" [class]="store.branch_type">
+            <span class="type-dot"></span>
+            {{ 'STORES.' + (store.branch_type | uppercase) | translate }}
+          </span>
+        </ng-template>
+
+        <!-- Location custom template -->
+        <ng-template appCellTemplate="location" let-store>
+          <span class="location-text">{{ store.location || '—' }}</span>
+        </ng-template>
+
+        <!-- Status custom template -->
+        <ng-template appCellTemplate="is_active" let-store>
+          <button 
+            type="button" 
+            class="status-toggle-btn"
+            [class.active]="store.is_active !== false"
+            (click)="toggleStoreStatus(store)"
+          >
+            <span class="toggle-dot"></span>
+            {{ (store.is_active !== false ? 'STORES.ACTIVE' : 'STORES.INACTIVE') | translate }}
+          </button>
+        </ng-template>
+
+        <!-- Actions custom template -->
+        <ng-template appCellTemplate="actions" let-store>
+          <div class="actions-dropdown-wrapper" [class.has-active-dropdown]="activeDropdownStoreId() === store.id" style="position: relative;">
+            <button type="button" class="btn-action dropdown-trigger" (click)="toggleActionsDropdown($event, store.id)">
+              <i class="pi pi-ellipsis-v"></i>
+            </button>
+
+            @if (activeDropdownStoreId() === store.id) {
+              <div class="actions-dropdown-menu">
+                <a [routerLink]="['edit', store.id]" class="dropdown-item" style="text-decoration: none;">
+                  <i class="pi pi-pencil"></i>
+                  <span>{{ 'USERS.EDIT' | translate }}</span>
+                </a>
+                <button type="button" class="dropdown-item delete" (click)="deleteStore(store.id)">
+                  <i class="pi pi-trash"></i>
+                  <span>{{ 'STORES.DELETE' | translate }}</span>
+                </button>
+              </div>
+            }
+          </div>
+        </ng-template>
+      </app-shared-table>
+  </div>
+
+  <!-- Custom Delete Confirmation Modal -->
+  @if (showDeleteConfirmModal()) {
+    <div class="confirm-modal-overlay" (click)="cancelDelete()">
+      <div class="confirm-modal-card" (click)="$event.stopPropagation()">
+        <div class="confirm-modal-header">
+          <i class="pi pi-exclamation-triangle"></i>
+          <h3>{{ 'STORES.DELETE_TITLE' | translate }}</h3>
+        </div>
+        <div class="confirm-modal-body">
+          <p>{{ 'STORES.DELETE_CONFIRM' | translate }}</p>
+        </div>
+        <div class="confirm-modal-footer">
+          <button class="btn-cancel" (click)="cancelDelete()">
+            {{ 'STORES.CANCEL' | translate }}
+          </button>
+          <button class="btn-delete" (click)="executeDeleteStore()">
+            <i class="pi pi-trash"></i>
+            <span>{{ 'STORES.DELETE_BTN' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

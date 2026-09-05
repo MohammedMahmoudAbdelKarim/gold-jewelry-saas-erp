@@ -1,0 +1,122 @@
+<div class="sidebar-container">
+  <!-- Brand Bar -->
+  <div class="sidebar-brand">
+    <a routerLink="/" class="brand-link" (click)="closeOnNavigate()">
+      @if (themeService.currentTheme().logoUrl) {
+        <img [src]="themeService.currentTheme().logoUrl" alt="Logo" class="brand-img" />
+      } @else {
+        <app-brand-logo size="28" />
+      }
+      <span class="brand-name">{{ 'APP.TITLE' | translate }}</span>
+    </a>
+  </div>
+
+  <!-- Search Bar under logo -->
+  <div class="sidebar-search">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" [placeholder]="'TOOLBAR.SEARCH' | translate" />
+    <kbd class="search-kbd">⌘K</kbd>
+  </div>
+
+  <!-- Main Navigation -->
+  <nav class="sidebar-nav" aria-label="Main navigation">
+    <div class="nav-group-label">{{ 'NAV.MENU' | translate }}</div>
+    @for (item of mainNavItems(); track item.route) {
+      <a
+        [routerLink]="item.route"
+        class="sidebar-link"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+        (click)="closeOnNavigate()"
+      >
+        <i class="pi" [class]="item.icon"></i>
+        <span class="link-text">{{ item.labelKey | translate }}</span>
+      </a>
+    }
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-group-label">{{ 'NAV.SYSTEM' | translate }}</div>
+    @for (item of bottomNavItems(); track item.route) {
+      <a
+        [routerLink]="item.route"
+        class="sidebar-link"
+        routerLinkActive="active"
+        (click)="closeOnNavigate()"
+      >
+        <i class="pi" [class]="item.icon"></i>
+        <span class="link-text">{{ item.labelKey | translate }}</span>
+      </a>
+    }
+  </nav>
+
+  <!-- User Card (pinned bottom) -->
+  <div class="sidebar-user" (click)="$event.stopPropagation()">
+    <div class="user-avatar">
+      @if (authService.userProfile()?.avatarUrl) {
+        <img [src]="authService.userProfile()?.avatarUrl" alt="User avatar" class="avatar-img" />
+      } @else {
+        <i class="pi pi-user"></i>
+      }
+    </div>
+    <div class="user-info">
+      <span class="user-name">{{ authService.userProfile()?.name || authService.currentUser()?.name || ('TOOLBAR.ADMIN' | translate) }}</span>
+      <span class="user-role">{{ authService.getUserRoleKey(authService.currentUser()?.role) | translate }}</span>
+    </div>
+    <button type="button" class="user-menu-btn" (click)="toggleDropdown($event)" aria-label="User options">
+      <i class="pi pi-ellipsis-h"></i>
+    </button>
+
+    <!-- User dropdown menu floating upwards -->
+    @if (dropdownOpen()) {
+      <div class="user-dropdown-menu">
+        <button type="button" class="dropdown-item" (click)="navigateToProfile()">
+          <i class="pi pi-user"></i>
+          <span>{{ 'APP.PROFILE' | translate }}</span>
+        </button>
+        <button type="button" class="dropdown-item" (click)="navigateToSettings()">
+          <i class="pi pi-cog"></i>
+          <span>{{ 'NAV.SETTINGS' | translate }}</span>
+        </button>
+        <div class="dropdown-divider"></div>
+        <button type="button" class="dropdown-item danger" (click)="confirmLogout($event)">
+          <i class="pi pi-sign-out"></i>
+          <span>{{ 'APP.LOGOUT' | translate }}</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- ─── Logout Confirmation Modal ─── -->
+@if (logoutConfirmOpen()) {
+  <div class="logout-overlay" (click)="cancelLogout()">
+    <div class="logout-modal" (click)="$event.stopPropagation()">
+      <div class="logout-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </div>
+      <h3 class="logout-title">{{ 'APP.LOGOUT_CONFIRM_TITLE' | translate }}</h3>
+      <p class="logout-msg">{{ 'APP.LOGOUT_CONFIRM_MSG' | translate }}</p>
+      <div class="logout-actions">
+        <button type="button" class="btn-logout-cancel" (click)="cancelLogout()">
+          {{ 'PROFILE.CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn-logout-confirm" (click)="executeLogout()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          {{ 'APP.LOGOUT' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+

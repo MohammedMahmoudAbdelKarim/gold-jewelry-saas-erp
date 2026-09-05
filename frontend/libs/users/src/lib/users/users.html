@@ -1,0 +1,235 @@
+<div class="users-container" [dir]="languageService.direction()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2 class="page-title">
+        <i class="pi pi-id-card"></i>
+        {{ 'NAV.USERS' | translate }}
+      </h2>
+      <p class="page-subtitle">{{ 'USERS.SUBTITLE' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-navigation">
+    <a routerLink="/users" class="tab-link active">{{ 'USERS.TAB_EMPLOYEES' | translate }}</a>
+    <a routerLink="/users/roles" class="tab-link">{{ 'USERS.TAB_ROLES' | translate }}</a>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon-wrap blue">
+        <i class="pi pi-users"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'USERS.STATS_TOTAL' | translate }}</span>
+        <span class="stat-value">{{ totalUsersCount() }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon-wrap gold">
+        <i class="pi pi-shield"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'USERS.STATS_ADMINS' | translate }}</span>
+        <span class="stat-value">{{ activeAdmins() }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon-wrap purple">
+        <i class="pi pi-briefcase"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'USERS.STATS_MANAGERS' | translate }}</span>
+        <span class="stat-value">{{ activeManagers() }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon-wrap green">
+        <i class="pi pi-shopping-cart"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'USERS.STATS_SALES' | translate }}</span>
+        <span class="stat-value">{{ activeSales() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  @if (successMessage()) {
+    <div class="toast-message success">
+      <i class="pi pi-check-circle"></i>
+      <span>{{ successMessage() }}</span>
+    </div>
+  }
+  @if (errorMessage() && !showModal()) {
+    <div class="toast-message error">
+      <i class="pi pi-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Action & Filter Bar -->
+  <div class="controls-bar">
+    <div class="search-box">
+      <i class="pi pi-search search-icon"></i>
+      <input
+        type="text"
+        [placeholder]="'TOOLBAR.SEARCH' | translate"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="filters-wrap">
+      <!-- Role Filter -->
+      <div class="select-wrapper">
+        <select [ngModel]="selectedRoleFilter()" (ngModelChange)="selectedRoleFilter.set($event)">
+          <option value="">{{ 'USERS.ALL_ROLES' | translate }}</option>
+          @for (role of roles(); track role.id) {
+            <option [value]="role.id">{{ translateRole(role.name) }}</option>
+          }
+        </select>
+        <i class="pi pi-chevron-down select-chevron"></i>
+      </div>
+
+      <!-- Branch Filter -->
+      <div class="select-wrapper">
+        <select [ngModel]="selectedBranchFilter()" (ngModelChange)="selectedBranchFilter.set($event)">
+          <option value="">{{ 'USERS.ALL_BRANCHES' | translate }}</option>
+          @for (branch of branches(); track branch.id) {
+            <option [value]="branch.id">{{ branch.name }}</option>
+          }
+        </select>
+        <i class="pi pi-chevron-down select-chevron"></i>
+      </div>
+
+      <!-- Add Button -->
+      <a routerLink="new" class="btn-primary" style="text-decoration: none;">
+        <i class="pi pi-plus"></i>
+        <span>{{ 'USERS.ADD_USER' | translate }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Employees Table Card -->
+  <div class="table-card">
+    <app-shared-table
+      [data]="filteredUsers()"
+      [columns]="tableColumns"
+      [isLoading]="isLoading()"
+      [errorMessage]="errorMessage()"
+      [(currentPage)]="currentPage"
+      [(pageSize)]="pageSize"
+      [pageSizeOptions]="[5, 10, 20]"
+      noItemsMessage="USERS.NO_EMPLOYEES"
+    >
+      <!-- Employee custom template -->
+      <ng-template appCellTemplate="employee" let-user>
+        <div class="employee-cell">
+          <div class="avatar-circle">
+            @if (user.avatar_url) {
+              <img [src]="user.avatar_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+            } @else {
+              {{ getInitials(user.name) }}
+            }
+          </div>
+          <div class="employee-meta">
+            <span class="employee-name">{{ user.name }}</span>
+            <span class="employee-email">{{ user.email }}</span>
+            @if (user.phone || user.address) {
+              <span class="employee-submeta" style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 0.15rem; display: flex; flex-direction: column; gap: 0.05rem;">
+                @if (user.phone) {
+                  <span><i class="pi pi-phone" style="font-size: 0.7rem;"></i> {{ user.phone }}</span>
+                }
+                @if (user.address) {
+                  <span><i class="pi pi-map-marker" style="font-size: 0.7rem;"></i> {{ user.address }}</span>
+                }
+              </span>
+            }
+          </div>
+        </div>
+      </ng-template>
+
+      <!-- Role custom template -->
+      <ng-template appCellTemplate="role" let-user>
+        <span class="badge-role" [class]="getRoleClass(user.role_name)">
+          {{ translateRole(user.role_name) }}
+        </span>
+      </ng-template>
+
+      <!-- Branch custom template -->
+      <ng-template appCellTemplate="branch" let-user>
+        <span class="branch-text">
+          <i class="pi pi-map-marker branch-icon"></i>
+          {{ user.branch_name || '—' }}
+        </span>
+      </ng-template>
+
+      <!-- Status custom template -->
+      <ng-template appCellTemplate="status" let-user>
+        <div class="status-cell">
+          <button type="button" class="status-toggle-btn" [class.active]="user.is_active" (click)="toggleUserStatus(user)" [title]="user.is_active ? ('USERS.SUSPEND_ACCOUNT' | translate) : ('USERS.ACTIVATE_ACCOUNT' | translate)">
+            <span class="status-indicator" [class.active]="user.is_active"></span>
+            <span class="status-label" [class.active]="user.is_active">{{ user.is_active ? ('USERS.STATUS_ACTIVE' | translate) : ('USERS.STATUS_SUSPENDED' | translate) }}</span>
+          </button>
+        </div>
+      </ng-template>
+
+      <!-- Actions custom template -->
+      <ng-template appCellTemplate="actions" let-user>
+        <div class="actions-dropdown-wrapper" [class.has-active-dropdown]="activeDropdownUserId() === user.id" style="position: relative;">
+          <button type="button" class="btn-action dropdown-trigger" (click)="toggleActionsDropdown($event, user.id)" title="More Actions">
+            <i class="pi pi-ellipsis-v"></i>
+          </button>
+          
+          @if (activeDropdownUserId() === user.id) {
+            <div class="actions-dropdown-menu">
+              <a [routerLink]="['edit', user.id]" class="dropdown-item" style="text-decoration: none;">
+                <i class="pi pi-pencil"></i>
+                <span>{{ 'USERS.EDIT' | translate }}</span>
+              </a>
+              
+              <button type="button" class="dropdown-item" (click)="toggleUserStatus(user)">
+                <i class="pi" [class]="user.is_active ? 'pi-ban' : 'pi-check-circle'"></i>
+                <span>{{ user.is_active ? ('USERS.DISABLE' | translate) : ('USERS.ENABLE' | translate) }}</span>
+              </button>
+              
+              <div class="dropdown-divider"></div>
+              
+              <button type="button" class="dropdown-item delete" (click)="deleteUser(user.id)" [disabled]="user.email === 'admin@test.com'">
+                <i class="pi pi-trash"></i>
+                <span>{{ 'USERS.DELETE' | translate }}</span>
+              </button>
+            </div>
+          }
+        </div>
+      </ng-template>
+    </app-shared-table>
+  </div>
+
+  <!-- Custom Delete Confirmation Modal -->
+  @if (showDeleteConfirmModal()) {
+    <div class="confirm-modal-overlay" (click)="cancelDelete()">
+      <div class="confirm-modal-card" (click)="$event.stopPropagation()">
+        <div class="confirm-modal-header">
+          <i class="pi pi-exclamation-triangle"></i>
+          <h3>{{ 'USERS.DELETE_TITLE' | translate }}</h3>
+        </div>
+        <div class="confirm-modal-body">
+          <p>{{ 'USERS.DELETE_CONFIRM' | translate }}</p>
+        </div>
+        <div class="confirm-modal-footer">
+          <button class="btn-cancel" (click)="cancelDelete()">
+            {{ 'USERS.CANCEL' | translate }}
+          </button>
+          <button class="btn-delete" (click)="executeDeleteUser()">
+            <i class="pi pi-trash"></i>
+            <span>{{ 'USERS.DELETE_BTN' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

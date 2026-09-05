@@ -1,0 +1,41 @@
+<div class="phone-input-wrap">
+  <div class="dropdown-wrap phone-code-dropdown">
+    <button
+      type="button"
+      class="dropdown-btn"
+      [class.is-open]="showDropdown()"
+      (click)="toggleDropdown($event)"
+    >
+      <span class="selected-val">
+        <img [src]="getSelectedFlag()" class="flag-icon-img" alt="" />
+        {{ code() }}
+      </span>
+      <i class="pi pi-chevron-down chevron-icon"></i>
+    </button>
+    @if (showDropdown()) {
+      <div class="dropdown-panel">
+        <ul class="panel-list">
+          @for (item of countryCodes; track item.code) {
+            <li
+              class="panel-item"
+              [class.selected]="code() === item.code"
+              (click)="selectCode(item)"
+            >
+              <img [src]="item.flag" class="flag-icon-img" alt="" />
+              <span>{{ item.name }} ({{ item.code }})</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+  <input
+    type="tel"
+    [id]="inputId()"
+    [name]="inputId()"
+    [ngModel]="number()"
+    (ngModelChange)="number.set($event)"
+    [placeholder]="placeholder()"
+    class="phone-number-input"
+  />
+</div>

@@ -1,0 +1,379 @@
+<div class="settings-page">
+  <!-- Tabs Navigation at the top -->
+  <div class="settings-tabs-nav mb-4">
+    <button
+      type="button"
+      class="settings-tab-btn"
+      [class.active]="activePage() === 'appearance'"
+      (click)="activePage.set('appearance')"
+    >
+      <i class="pi pi-desktop"></i>
+      <span>{{ 'SETTINGS.APPEARANCE_TAB' | translate }}</span>
+    </button>
+    <button
+      type="button"
+      class="settings-tab-btn"
+      [class.active]="activePage() === 'system'"
+      (click)="activePage.set('system')"
+    >
+      <i class="pi pi-cog"></i>
+      <span>{{ 'SETTINGS.SYSTEM_TAB' | translate }}</span>
+    </button>
+  </div>
+
+  <!-- Page 1: Appearance Customization -->
+  @if (activePage() === 'appearance') {
+    <div class="page-header mb-4">
+      <div class="header-text">
+        <h2 class="page-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          {{ 'SETTINGS.APPEARANCE_TITLE' | translate }}
+        </h2>
+        <p class="page-subtitle">{{ 'SETTINGS.SUBTITLE_APPEARANCE' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Theme Colors -->
+      <div class="col-12 col-lg-6">
+        <div class="card-premium settings-card card-theme h-100">
+          <h5 class="card-title mb-3">
+            <i class="pi pi-palette me-2"></i>{{ 'SETTINGS.THEME' | translate }}
+          </h5>
+
+          <div class="setting-row mb-3">
+            <label for="primaryColor">{{ 'SETTINGS.PRIMARY_COLOR' | translate }}</label>
+            <div class="color-input-group">
+              <input
+                id="primaryColor"
+                type="color"
+                [ngModel]="themeService.currentTheme().primaryColor"
+                (ngModelChange)="themeService.updatePrimaryColor($event)"
+              />
+              <span class="color-value">{{ themeService.currentTheme().primaryColor }}</span>
+            </div>
+          </div>
+
+          <div class="setting-row mb-3">
+            <label for="bgColor">{{ 'SETTINGS.BACKGROUND_COLOR' | translate }}</label>
+            <div class="color-input-group">
+              <input
+                id="bgColor"
+                type="color"
+                [ngModel]="themeService.currentTheme().backgroundColor"
+                (ngModelChange)="themeService.updateBackgroundColor($event)"
+              />
+              <span class="color-value">{{ themeService.currentTheme().backgroundColor }}</span>
+            </div>
+          </div>
+
+          <div class="theme-preview p-3 rounded" [style.background]="themeService.currentTheme().backgroundColor">
+            <div class="preview-accent" [style.color]="themeService.currentTheme().primaryColor">
+              <i class="pi pi-star-fill me-2"></i>{{ 'SETTINGS.PREVIEW' | translate }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logo -->
+      <div class="col-12 col-lg-6">
+        <div class="card-premium settings-card card-brand h-100">
+          <h5 class="card-title mb-3">
+            <i class="pi pi-image me-2"></i>{{ 'SETTINGS.LOGO' | translate }}
+          </h5>
+
+          <div class="logo-preview mb-3 d-flex align-items-center justify-content-center">
+            @if (themeService.currentTheme().logoUrl) {
+              <img [src]="themeService.currentTheme().logoUrl" alt="Logo preview" class="logo-img" />
+            } @else {
+              <app-brand-logo size="56" />
+            }
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <label class="upload-btn btn-premium-action">
+              <i class="pi pi-upload me-2"></i>{{ 'SETTINGS.UPLOAD_LOGO' | translate }}
+              <input type="file" accept="image/*" hidden (change)="onLogoFileSelected($event)" />
+            </label>
+            @if (themeService.currentTheme().logoUrl) {
+              <p-button
+                [label]="'SETTINGS.REMOVE_LOGO' | translate"
+                icon="pi pi-trash"
+                severity="danger"
+                [outlined]="true"
+                (onClick)="removeLogo()"
+              />
+            }
+          </div>
+          <small class="logo-hint-text d-block mt-2">{{ 'SETTINGS.LOGO_HINT' | translate }}</small>
+        </div>
+      </div>
+
+      <!-- Fonts -->
+      <div class="col-12">
+        <div class="card-premium settings-card card-typography">
+          <h5 class="card-title mb-3">
+            <i class="pi pi-pencil me-2"></i>{{ 'SETTINGS.FONTS' | translate }}
+          </h5>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ 'SETTINGS.FONT_EN' | translate }}</label>
+              <div class="dropdown-wrap settings-dropdown-wrap">
+                <button type="button" class="settings-select-btn" [class.is-open]="fontEnOpen()" (click)="toggleFontEn($event)">
+                  <span class="selected-val" [style.fontFamily]="themeService.currentTheme().fontFamilyEn">
+                    {{ getFontLabelEn(themeService.currentTheme().fontFamilyEn) }}
+                  </span>
+                  <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
+                @if (fontEnOpen()) {
+                  <div class="dropdown-panel font-dropdown-panel">
+                    <ul class="panel-list">
+                      @for (font of fontOptionsEn; track font.value) {
+                        <li class="panel-item" [class.selected]="font.value === themeService.currentTheme().fontFamilyEn" (click)="selectFontEn(font.value)">
+                          <div class="item-dot" [class.active]="font.value === themeService.currentTheme().fontFamilyEn"></div>
+                          <div class="item-content">
+                            <strong [style.fontFamily]="font.value">{{ font.label }}</strong>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+              </div>
+              <p class="font-sample mt-2 mb-0" [style.fontFamily]="themeService.currentTheme().fontFamilyEn">
+                {{ 'SETTINGS.FONT_SAMPLE_EN' | translate }}
+              </p>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ 'SETTINGS.FONT_AR' | translate }}</label>
+              <div class="dropdown-wrap settings-dropdown-wrap">
+                <button type="button" class="settings-select-btn" [class.is-open]="fontArOpen()" (click)="toggleFontAr($event)">
+                  <span class="selected-val" [style.fontFamily]="themeService.currentTheme().fontFamilyAr">
+                    {{ getFontLabelAr(themeService.currentTheme().fontFamilyAr) }}
+                  </span>
+                  <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
+                @if (fontArOpen()) {
+                  <div class="dropdown-panel font-dropdown-panel">
+                    <ul class="panel-list">
+                      @for (font of fontOptionsAr; track font.value) {
+                        <li class="panel-item" [class.selected]="font.value === themeService.currentTheme().fontFamilyAr" (click)="selectFontAr(font.value)">
+                          <div class="item-dot" [class.active]="font.value === themeService.currentTheme().fontFamilyAr"></div>
+                          <div class="item-content">
+                            <strong [style.fontFamily]="font.value">{{ font.label }}</strong>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+              </div>
+              <p class="font-sample mt-2 mb-0" [style.fontFamily]="themeService.currentTheme().fontFamilyAr" dir="rtl">
+                {{ 'SETTINGS.FONT_SAMPLE_AR' | translate }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="col-12 mt-2">
+        <div class="d-flex justify-content-end gap-2">
+          <p-button
+            [label]="(saved() ? 'SETTINGS.SAVED' : 'SETTINGS.SAVE') | translate"
+            [icon]="saved() ? 'pi pi-check' : 'pi pi-save'"
+            [severity]="saved() ? 'success' : 'primary'"
+            [disabled]="saved()"
+            (onClick)="saveSettings()"
+          />
+          <p-button
+            [label]="'SETTINGS.RESET' | translate"
+            icon="pi pi-refresh"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="resetSettings()"
+          />
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Page 2: System Settings -->
+  @if (activePage() === 'system') {
+    <div class="page-header mb-4">
+      <div class="header-text">
+        <h2 class="page-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 008 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+          {{ 'SETTINGS.SYSTEM_TITLE' | translate }}
+        </h2>
+        <p class="page-subtitle">{{ 'SETTINGS.SUBTITLE_SYSTEM' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Dollar Price -->
+      <div class="col-12 col-lg-6">
+        <div class="card-premium settings-card card-usd h-100">
+          <h5 class="card-title mb-3">
+            <i class="pi pi-dollar me-2"></i>{{ 'SETTINGS.DOLLAR_RATE' | translate }}
+          </h5>
+          <p class="text-muted small mb-4">{{ 'SETTINGS.DOLLAR_RATE_DESC' | translate }}</p>
+          
+          <div class="setting-row mb-3">
+            <label for="dollarPrice" class="form-label">{{ 'SETTINGS.USD_EGP_RATE' | translate }}</label>
+            <p-inputNumber
+              id="dollarPrice"
+              [ngModel]="systemSettingsService.config().dollarPrice"
+              (ngModelChange)="systemSettingsService.updateConfig({ dollarPrice: $event || 0 })"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="4"
+              mode="decimal"
+              suffix=" EGP"
+              [style]="{ width: '100%' }"
+              class="w-100"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Gold Karat Rates -->
+      <div class="col-12 col-lg-6">
+        <div class="card-premium settings-card card-gold h-100">
+          <h5 class="card-title mb-3">
+            <i class="pi pi-chart-line me-2"></i>{{ 'SETTINGS.KARAT_PRICES' | translate }}
+          </h5>
+          <p class="text-muted small mb-4">{{ 'SETTINGS.KARAT_PRICES_DESC' | translate }}</p>
+
+          <div class="row g-3">
+            <div class="col-6">
+              <label for="karat24" class="form-label d-flex align-items-center gap-2">
+                <span class="badge-karat badge-24k">24K</span>
+                {{ 'SETTINGS.KARAT_24' | translate }}
+              </label>
+              <p-inputNumber
+                id="karat24"
+                [ngModel]="systemSettingsService.config().karat24"
+                (ngModelChange)="systemSettingsService.updateConfig({ karat24: $event || 0 })"
+                suffix=" EGP"
+                [style]="{ width: '100%' }"
+              />
+            </div>
+
+            <div class="col-6">
+              <label for="karat21" class="form-label d-flex align-items-center gap-2">
+                <span class="badge-karat badge-21k">21K</span>
+                {{ 'SETTINGS.KARAT_21' | translate }}
+              </label>
+              <p-inputNumber
+                id="karat21"
+                [ngModel]="systemSettingsService.config().karat21"
+                (ngModelChange)="systemSettingsService.updateConfig({ karat21: $event || 0 })"
+                suffix=" EGP"
+                [style]="{ width: '100%' }"
+              />
+            </div>
+
+            <div class="col-6">
+              <label for="karat18" class="form-label d-flex align-items-center gap-2">
+                <span class="badge-karat badge-18k">18K</span>
+                {{ 'SETTINGS.KARAT_18' | translate }}
+              </label>
+              <p-inputNumber
+                id="karat18"
+                [ngModel]="systemSettingsService.config().karat18"
+                (ngModelChange)="systemSettingsService.updateConfig({ karat18: $event || 0 })"
+                suffix=" EGP"
+                [style]="{ width: '100%' }"
+              />
+            </div>
+
+            <div class="col-6">
+              <label for="silver" class="form-label d-flex align-items-center gap-2">
+                <span class="badge-karat badge-slvr">SLVR</span>
+                {{ 'SETTINGS.SILVER' | translate }}
+              </label>
+              <p-inputNumber
+                id="silver"
+                [ngModel]="systemSettingsService.config().silver"
+                (ngModelChange)="systemSettingsService.updateConfig({ silver: $event || 0 })"
+                suffix=" EGP"
+                [style]="{ width: '100%' }"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Taxes & Stamp Duty (ضريبة ودمغة) -->
+      <div class="col-12">
+        <div class="card-premium settings-card card-taxes">
+          <h5 class="card-title mb-3">
+            <i class="pi pi-percentage me-2"></i>{{ 'SETTINGS.TAX_STAMP' | translate }}
+          </h5>
+          <p class="text-muted small mb-4">{{ 'SETTINGS.TAX_STAMP_DESC' | translate }}</p>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label for="taxRate" class="form-label">{{ 'SETTINGS.VAT_RATE' | translate }}</label>
+              <p-inputNumber
+                id="taxRate"
+                [ngModel]="systemSettingsService.config().taxRate"
+                (ngModelChange)="systemSettingsService.updateConfig({ taxRate: $event || 0 })"
+                suffix=" %"
+                [minFractionDigits]="1"
+                [maxFractionDigits]="2"
+                [style]="{ width: '100%' }"
+              />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label for="stampDuty" class="form-label">{{ 'SETTINGS.STAMP_DUTY' | translate }}</label>
+              <p-inputNumber
+                id="stampDuty"
+                [ngModel]="systemSettingsService.config().stampDuty"
+                (ngModelChange)="systemSettingsService.updateConfig({ stampDuty: $event || 0 })"
+                suffix=" EGP/g"
+                [minFractionDigits]="1"
+                [maxFractionDigits]="2"
+                [style]="{ width: '100%' }"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="col-12 mt-2">
+        <div class="d-flex justify-content-end gap-2">
+          <p-button
+            [label]="(saved() ? 'SETTINGS.SAVED' : 'SETTINGS.SAVE') | translate"
+            [icon]="saved() ? 'pi pi-check' : 'pi pi-save'"
+            [severity]="saved() ? 'success' : 'primary'"
+            [disabled]="saved()"
+            (onClick)="saveSettings()"
+          />
+          <p-button
+            [label]="'SETTINGS.RESET' | translate"
+            icon="pi pi-refresh"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="resetSettings()"
+          />
+        </div>
+      </div>
+    </div>
+  }
+</div>

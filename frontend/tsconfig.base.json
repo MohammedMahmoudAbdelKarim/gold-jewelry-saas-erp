@@ -1,0 +1,38 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "paths": {
+      "@frontend/core": ["./libs/core/src/index.ts"],
+      "@frontend/shared": ["./libs/shared/src/index.ts"],
+      "@frontend/ui": ["./libs/ui/src/index.ts"],
+      "@frontend/auth": ["./libs/auth/src/index.ts"],
+      "@frontend/dashboard": ["./libs/dashboard/src/index.ts"],
+      "@frontend/inventory": ["./libs/inventory/src/index.ts"],
+      "@frontend/sales": ["./libs/sales/src/index.ts"],
+      "@frontend/purchase": ["./libs/purchase/src/index.ts"],
+      "@frontend/customers": ["./libs/customers/src/index.ts"],
+      "@frontend/suppliers": ["./libs/suppliers/src/index.ts"],
+      "@frontend/reports": ["./libs/reports/src/index.ts"],
+      "@frontend/accounting": ["./libs/accounting/src/index.ts"],
+      "@frontend/settings": ["./libs/settings/src/index.ts"],
+      "@frontend/notifications": ["./libs/notifications/src/index.ts"],
+      "@frontend/audit": ["./libs/audit/src/index.ts"],
+      "@frontend/profile": ["./libs/profile/src/index.ts"],
+      "@frontend/users": ["./libs/users/src/index.ts"],
+      "@frontend/stores": ["./libs/stores/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

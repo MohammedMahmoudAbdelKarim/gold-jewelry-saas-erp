@@ -1,0 +1,252 @@
+<div class="inventory-container">
+  @if (showHeader()) {
+    <div class="inventory-header">
+      <div>
+        <h2 class="page-title">
+          <i class="pi pi-box"></i>
+          {{ 'INVENTORY.TITLE' | translate }}
+        </h2>
+        <p class="page-subtitle">{{ 'INVENTORY.SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- Live Gold Rate and Filter Panel -->
+  <div class="control-panel card-premium">
+    <div class="live-rate-section">
+      <label for="goldRate"><i class="pi pi-bolt live-icon"></i> {{ 'INVENTORY.LIVE_RATE' | translate }}</label>
+      <div class="live-rate-input-wrapper">
+        <span class="currency-prefix">EGP</span>
+        <input
+          type="number"
+          id="goldRate"
+          [ngModel]="goldRate24k()"
+          (ngModelChange)="goldRate24k.set($event)"
+          placeholder="3850"
+        />
+      </div>
+    </div>
+
+    <div class="filters-section">
+      <div class="filter-group">
+        <label for="search">{{ 'NAV.REPORTS' | translate }}</label>
+        <div class="search-input-wrapper">
+          <i class="pi pi-search search-icon"></i>
+          <input
+            type="text"
+            id="search"
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            [placeholder]="'INVENTORY.SEARCH' | translate"
+          />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label for="karat">{{ 'INVENTORY.COL_KARAT' | translate }}</label>
+        <select
+          id="karat"
+          [ngModel]="karatFilter()"
+          (ngModelChange)="karatFilter.set($event)"
+        >
+          <option value="ALL">{{ 'INVENTORY.FILTER_ALL_KARATS' | translate }}</option>
+          <option value="24K">24K</option>
+          <option value="22K">22K</option>
+          <option value="21K">21K</option>
+          <option value="18K">18K</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="status">{{ 'INVENTORY.COL_STATUS' | translate }}</label>
+        <select
+          id="status"
+          [ngModel]="statusFilter()"
+          (ngModelChange)="statusFilter.set($event)"
+        >
+          <option value="ALL">{{ 'INVENTORY.FILTER_ALL_STATUS' | translate }}</option>
+          <option value="in_stock">{{ 'INVENTORY.STATUS_AVAILABLE' | translate }}</option>
+          <option value="sold">{{ 'INVENTORY.STATUS_SOLD' | translate }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+    <app-shared-table
+      [data]="filteredItems()"
+      [columns]="tableColumns"
+      [isLoading]="isLoading()"
+      [errorMessage]="errorMessage() ? ('INVENTORY.ERROR_LOAD' | translate) : null"
+      [(currentPage)]="currentPage"
+      [(pageSize)]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      noItemsMessage="INVENTORY.NO_ITEMS"
+    >
+      <!-- Barcode custom template -->
+      <ng-template appCellTemplate="barcode" let-item>
+        <span class="barcode-badge">
+          <i class="pi pi-barcode barcode-icon"></i>
+          {{ item.barcode }}
+        </span>
+      </ng-template>
+
+      <!-- Name custom template -->
+      <ng-template appCellTemplate="name" let-item>
+        <div class="product-info">
+          <span class="product-name">{{ item.product_name || 'Golden Band Ring' }}</span>
+          <span class="product-sku">{{ item.product_sku || item.product_id }}</span>
+        </div>
+      </ng-template>
+
+      <!-- Karat custom template -->
+      <ng-template appCellTemplate="karat" let-item>
+        <span class="karat-badge">{{ item.gold_karat }}</span>
+      </ng-template>
+
+      <!-- Gross Weight custom template -->
+      <ng-template appCellTemplate="gross_weight" let-item>
+        {{ item.gross_weight }} g
+      </ng-template>
+
+      <!-- Net Gold Weight custom template -->
+      <ng-template appCellTemplate="net_gold_weight" let-item>
+        {{ item.net_gold_weight }} g
+      </ng-template>
+
+      <!-- Wastage custom template -->
+      <ng-template appCellTemplate="wastage" let-item>
+        {{ item.wastage_percent }}%
+      </ng-template>
+
+      <!-- Making Charge custom template -->
+      <ng-template appCellTemplate="making_charge" let-item>
+        <span class="charge-info">
+          EGP {{ item.making_charge_rate }}
+          <small>/{{ item.making_charge_type === 'fixed' ? 'pc' : 'g' }}</small>
+        </span>
+      </ng-template>
+
+      <!-- Stone Charge custom template -->
+      <ng-template appCellTemplate="stone_charge" let-item>
+        EGP {{ item.stone_charge || 0 }}
+      </ng-template>
+
+      <!-- Status custom template -->
+      <ng-template appCellTemplate="status" let-item>
+        <span
+          class="status-pill"
+          [class.status-instock]="item.status === 'in_stock'"
+          [class.status-reserved]="item.status === 'reserved'"
+          [class.status-sold]="item.status === 'sold'"
+        >
+          {{ 
+            item.status === 'in_stock' ? ('INVENTORY.STATUS_AVAILABLE' | translate) :
+            item.status === 'reserved' ? ('INVENTORY.STATUS_RESERVED' | translate) :
+            ('INVENTORY.STATUS_SOLD' | translate) 
+          }}
+        </span>
+      </ng-template>
+
+
+
+      <!-- Total Price custom template -->
+      <ng-template appCellTemplate="total_price" let-item>
+        <span class="total-cell">EGP {{ item.pricing.totalPrice | number:'1.2-2' }}</span>
+      </ng-template>
+
+      <!-- Actions custom template -->
+      <ng-template appCellTemplate="actions" let-item>
+        <div class="actions-dropdown-wrapper" [class.has-active-dropdown]="activeDropdownItemId() === item.id" style="position: relative; display: inline-block;">
+          @if (actionLoadingItemId() === item.id) {
+            <span class="action-spinner">
+              <i class="pi pi-spin pi-spinner"></i>
+            </span>
+          } @else {
+            <button 
+              type="button" 
+              class="btn-action dropdown-trigger" 
+              (click)="toggleActionsDropdown($event, item.id)"
+              title="More Actions"
+            >
+              <i class="pi pi-ellipsis-v"></i>
+            </button>
+          }
+
+          @if (activeDropdownItemId() === item.id) {
+            <div class="actions-dropdown-menu">
+              <!-- Edit action -->
+              <button 
+                type="button" 
+                class="dropdown-item" 
+                (click)="editItem(item)"
+              >
+                <i class="pi pi-pencil"></i>
+                <span>{{ 'INVENTORY.ACTION_EDIT' | translate }}</span>
+              </button>
+
+              <!-- Toggle reserve action -->
+              @if (item.status !== 'sold') {
+                <button 
+                  type="button" 
+                  class="dropdown-item" 
+                  (click)="toggleReservedStatus(item)"
+                >
+                  <i class="pi" [class.pi-bookmark-fill]="item.status === 'reserved'" [class.pi-bookmark]="item.status !== 'reserved'"></i>
+                  <span>{{ (item.status === 'reserved' ? 'INVENTORY.ACTION_UNRESERVE' : 'INVENTORY.ACTION_RESERVE') | translate }}</span>
+                </button>
+              }
+
+              <div class="dropdown-divider"></div>
+
+              <!-- Delete action -->
+              <button 
+                type="button" 
+                class="dropdown-item delete" 
+                (click)="openDeleteConfirm(item)"
+              >
+                <i class="pi pi-trash"></i>
+                <span>{{ 'INVENTORY.ACTION_DELETE' | translate }}</span>
+              </button>
+            </div>
+          }
+        </div>
+      </ng-template>
+    </app-shared-table>
+
+  <!-- Delete Confirmation Popup -->
+  @if (isDeleteConfirmOpen()) {
+    <div class="modal-overlay" (click)="closeDeleteConfirm()">
+      <div class="confirm-dialog card-premium" (click)="$event.stopPropagation()">
+        <div class="confirm-icon-wrapper">
+          <i class="pi pi-exclamation-triangle confirm-warning-icon"></i>
+        </div>
+        <h3 class="confirm-title">{{ 'INVENTORY.CONFIRM_DELETE_TITLE' | translate }}</h3>
+        <p class="confirm-message">{{ 'INVENTORY.CONFIRM_DELETE' | translate }}</p>
+
+        @if (deleteTargetItem()) {
+          <div class="confirm-item-preview">
+            <span class="barcode-badge">
+              <i class="pi pi-barcode barcode-icon"></i>
+              {{ deleteTargetItem().barcode }}
+            </span>
+          </div>
+        }
+
+        <div class="confirm-actions">
+          <button type="button" class="btn-cancel" (click)="closeDeleteConfirm()" [disabled]="isDeleting()">
+            <i class="pi pi-times"></i> {{ 'INVENTORY.CANCEL' | translate }}
+          </button>
+          <button type="button" class="btn-danger" (click)="confirmDelete()" [disabled]="isDeleting()">
+            @if (isDeleting()) {
+              <i class="pi pi-spin pi-spinner"></i>
+            } @else {
+              <i class="pi pi-trash"></i>
+            }
+            {{ 'INVENTORY.CONFIRM_YES' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

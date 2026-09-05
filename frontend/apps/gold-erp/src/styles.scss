@@ -1,0 +1,737 @@
+@use './fonts.scss';
+
+:root {
+  /* Dynamic Fallbacks */
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f5f9;
+  --border-color: #e2e8f0;
+  --border-color-hover: #cbd5e1;
+
+  --color-primary: #a27c38;
+  --color-primary-hover: #8c6828;
+  --color-primary-glow: rgba(162, 124, 56, 0.08);
+
+  --color-secondary: #64748b;
+  --color-success: #10b981;
+  --color-info: #3b82f6;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+
+  --font-family-en: 'Dubai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-ar: 'Dubai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-base: var(--font-family-en);
+
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 14px;
+  --border-radius-xl: 20px;
+
+  --box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --box-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --box-shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+
+  --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-base);
+  font-size: 1rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Typography Scale */
+h1, .h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+h2, .h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--color-text);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+h3, .h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+h4, .h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+h5, .h5 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+h6, .h6 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  font-size: 0.925rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+small, .text-small {
+  font-size: 0.775rem;
+  color: var(--color-text-muted);
+}
+
+label {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.35rem;
+  display: inline-block;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--border-radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Modern Card Redesign */
+.card-premium {
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow-premium);
+  transition: var(--transition-smooth);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-premium:hover {
+  border-color: var(--border-color-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
+}
+
+/* Redesigned Form Fields & Inputs */
+input, select, textarea {
+  width: 100%;
+  background: var(--color-surface) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--color-text) !important;
+  border-radius: var(--border-radius-md) !important;
+  padding: 0.6rem 0.85rem !important;
+  font-size: 0.875rem !important;
+  font-family: inherit !important;
+  transition: var(--transition-smooth) !important;
+  outline: none !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px var(--color-primary-glow) !important;
+  background: var(--color-surface) !important;
+}
+
+select {
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 1rem !important;
+  padding-right: 2.25rem !important;
+  cursor: pointer !important;
+
+  option {
+    background: var(--color-surface) !important;
+    color: var(--color-text) !important;
+  }
+
+  [dir='rtl'] & {
+    background-position: left 0.75rem center !important;
+    padding-right: 0.85rem !important;
+    padding-left: 2.25rem !important;
+  }
+}
+
+/* Modern Premium Buttons */
+.btn-premium-action,
+.btn-gold-action,
+.p-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #CD9C20 0%, #E5B233 100%) !important;
+  color: #111111 !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  padding: 0.55rem 1.2rem !important;
+  border-radius: var(--border-radius-md) !important;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-decoration: none;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(205, 156, 32, 0.15) !important;
+
+  &:hover {
+    background: linear-gradient(135deg, #E5B233 0%, #F5C243 100%) !important;
+    box-shadow: 0 6px 16px rgba(205, 156, 32, 0.3) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    transform: translateY(0) !important;
+  }
+}
+
+/* Custom PrimeNG Button overrides */
+.p-button {
+  font-family: inherit !important;
+  font-size: 0.85rem !important;
+  padding: 0.55rem 1.2rem !important;
+  border-radius: var(--border-radius-md) !important;
+  transition: var(--transition-smooth) !important;
+}
+
+.p-button-secondary {
+  background: var(--color-surface) !important;
+  border-color: var(--border-color) !important;
+  color: var(--color-text) !important;
+}
+
+.p-button-secondary:hover {
+  background: var(--color-surface-hover) !important;
+  border-color: var(--border-color-hover) !important;
+}
+
+/* Global Grid System Gaps */
+.row {
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 1.5rem;
+}
+
+/* Premium Custom Select Dropdowns (Global Spec Kit Standard) */
+.dropdown-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-btn,
+.settings-select-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  height: 38px;
+  padding: 0 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+
+  &:hover, &.is-open {
+    background: rgba(205, 156, 32, 0.08);
+    border-color: #CD9C20;
+    box-shadow: 0 0 12px rgba(205, 156, 32, 0.1);
+  }
+
+  .selected-val {
+    font-size: 0.875rem !important;
+    font-weight: 600;
+  }
+
+  .chevron-icon {
+    color: rgba(255, 255, 255, 0.4);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  &.is-open .chevron-icon {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdown-panel,
+.font-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  background: linear-gradient(180deg, #141414 0%, #0e0e0e 100%);
+  border: 1px solid rgba(205, 156, 32, 0.15);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(205, 156, 32, 0.04);
+  z-index: 1050 !important;
+  overflow: hidden;
+
+  .panel-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  .panel-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    cursor: pointer;
+    transition: background 0.12s ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: rgba(205, 156, 32, 0.05);
+    }
+
+    &.selected {
+      background: rgba(205, 156, 32, 0.03);
+    }
+
+    .item-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+
+      &.active {
+        background: #cd9c20;
+        box-shadow: 0 0 4px rgba(205, 156, 32, 0.4);
+      }
+    }
+
+    .item-content {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+
+      strong {
+        font-size: 0.85rem !important;
+        color: #f2ecdd;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+/* Global Page Title Styling (matched to Dashboard Title Style) */
+.page-title {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #CD9C20 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0.25rem !important;
+  letter-spacing: -0.015em !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+
+  svg {
+    color: var(--color-primary) !important;
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0 !important;
+    filter: drop-shadow(0 0 8px var(--color-primary-glow));
+  }
+
+  > i.pi {
+    color: var(--color-primary) !important;
+    font-size: 1.25rem !important;
+    flex-shrink: 0 !important;
+    filter: drop-shadow(0 0 8px var(--color-primary-glow));
+  }
+}
+
+.page-subtitle {
+  font-size: 0.85rem !important;
+  color: var(--color-text-muted) !important;
+  margin: 0 !important;
+}
+
+/* Premium Overrides for PrimeNG Dropdown Overlay Panels (Appended to Body) */
+.p-dropdown-panel, .p-select-overlay {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+  border-radius: var(--border-radius-md) !important;
+  backdrop-filter: blur(8px) !important;
+  animation: dropdown-fade-in 0.15s ease-out !important;
+
+  .p-dropdown-items, .p-select-list, .p-select-items {
+    padding: 0.35rem !important;
+    list-style: none !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.15rem !important;
+
+    .p-dropdown-item, .p-select-option {
+      color: var(--color-text) !important;
+      font-size: 0.8rem !important;
+      font-weight: 500 !important;
+      padding: 0.45rem 1rem !important;
+      border-radius: var(--border-radius-sm) !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+      text-align: center !important;
+
+      &:hover, &.p-focus {
+        background: rgba(255, 255, 255, 0.05) !important;
+        color: #FFFFFF !important;
+      }
+
+      &.p-highlight {
+        background: var(--color-primary) !important;
+        color: #0B0B0B !important;
+      }
+    }
+  }
+}
+
+@keyframes dropdown-fade-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Global paginator dropdown style fixes (preventing overlaps and misalignment) */
+.p-paginator {
+  .p-dropdown, .p-select {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(205, 156, 32, 0.1) !important;
+    border-radius: 4px !important;
+    height: 2rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 0.5rem !important;
+    margin: 0 0.5rem !important;
+    min-width: 4rem !important;
+    transition: all 0.15s ease !important;
+    
+    &:hover, &.p-focus {
+      border-color: rgba(205, 156, 32, 0.3) !important;
+      background: rgba(205, 156, 32, 0.12) !important;
+      box-shadow: none !important;
+      
+      .p-dropdown-label, .p-select-label {
+        color: #F2ECDD !important;
+      }
+      
+      .p-dropdown-trigger, .p-select-dropdown {
+        color: #F2ECDD !important;
+        
+        .pi, .p-select-dropdown-icon {
+          color: #F2ECDD !important;
+        }
+      }
+    }
+    
+    .p-dropdown-label, .p-select-label {
+      color: rgba(242, 236, 221, 0.5) !important;
+      font-size: 0.7rem !important;
+      font-weight: 700 !important;
+      padding: 0 !important;
+      text-align: center !important;
+      width: 100% !important;
+      display: inline-block !important;
+    }
+    
+    .p-dropdown-trigger, .p-select-dropdown {
+      width: auto !important;
+      color: rgba(242, 236, 221, 0.4) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      
+      .pi, .p-select-dropdown-icon {
+        font-size: 0.65rem !important;
+        font-weight: bold !important;
+        color: rgba(242, 236, 221, 0.4) !important;
+      }
+    }
+  }
+}
+
+/* Global status pills styling for tables */
+.status-pill {
+  display: inline-flex;
+  padding: 0.25rem 0.65rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+
+  &.status-instock, &.status-active, &.status-true {
+    background: rgba(16, 185, 129, 0.08) !important;
+    border: 1px solid rgba(16, 185, 129, 0.2) !important;
+    color: var(--color-success) !important;
+  }
+
+  &.status-reserved {
+    background: rgba(245, 158, 11, 0.08) !important;
+    border: 1px solid rgba(245, 158, 11, 0.2) !important;
+    color: #f59e0b !important;
+  }
+
+  &.status-sold, &.status-suspended, &.status-false {
+    background: rgba(239, 68, 68, 0.08) !important;
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+    color: var(--color-danger) !important;
+  }
+}
+
+/* Delete Confirmation Modal (Global Spec Kit Standard) */
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.confirm-modal-card {
+  width: 100%;
+  max-width: 420px;
+  background: #111111;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 15px rgba(239, 68, 68, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: scaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  .confirm-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+    i {
+      font-size: 1.25rem;
+      color: #ef4444;
+      text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ef4444;
+    }
+  }
+
+  .confirm-modal-body {
+    padding: 1.5rem;
+    color: rgba(242, 236, 221, 0.8);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .confirm-modal-footer {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.01);
+
+    .btn-cancel {
+      padding: 0.55rem 1.25rem;
+      background: rgba(242, 236, 221, 0.04);
+      border: 1px solid rgba(242, 236, 221, 0.1);
+      border-radius: 8px;
+      color: var(--color-text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(242, 236, 221, 0.08);
+      }
+    }
+
+    .btn-delete {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.25rem;
+      background: #ef4444;
+      border: 1px solid #ef4444;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+
+      &:hover {
+        background: #dc2626;
+        border-color: #dc2626;
+        transform: translateY(-1px);
+      }
+    }
+  }
+}
+
+
+/* ==========================================
+   Leaflet Map – Dark Theme & Gold Marker Pin
+   ========================================== */
+#map-picker-container {
+  .leaflet-tile-container img,
+  .leaflet-tile {
+    filter: brightness(.8) invert(1) contrast(1.1) hue-rotate(200deg) saturate(0.3) brightness(0.8) !important;
+  }
+
+  .leaflet-bar {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: #111111;
+
+    a {
+      background-color: #111111;
+      color: var(--color-text);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+      }
+    }
+  }
+
+  .leaflet-control-attribution {
+    display: none !important;
+  }
+}
+
+.custom-gold-marker {
+  background: none !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.gold-marker-pin {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  background: var(--color-primary);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), 0 0 10px var(--color-primary-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #111111;
+    border-radius: 50%;
+    transform: rotate(45deg);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+  }
+}
+
+.pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  background: rgba(205, 156, 32, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  animation: pulse-animation 1.5s infinite ease-out;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes pulse-animation {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3.5);
+    opacity: 0;
+  }
+}

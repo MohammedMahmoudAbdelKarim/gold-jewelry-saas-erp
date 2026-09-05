@@ -1,0 +1,188 @@
+<div class="create-container" [dir]="languageService.direction()">
+  <!-- Page Header -->
+  <div class="create-header">
+    <h2 class="page-title">{{ (isEditMode ? 'PURCHASE.EDIT_ORDER' : 'PURCHASE.ADD_ORDER') | translate }}</h2>
+    <p class="page-subtitle">
+      {{ 'PURCHASE.SUBTITLE' | translate }}
+    </p>
+  </div>
+
+  @if (isLoading() && !isEditMode) {
+    <app-page-loader message="Preparing form data..." />
+  } @else {
+    <div class="form-card card-premium">
+      <form (submit)="saveOrder()" class="premium-form">
+        <!-- Section: Order Details -->
+        <div class="form-section-title">
+          <i class="pi pi-shopping-bag"></i> {{ 'PURCHASE.TITLE' | translate }}
+        </div>
+
+        <div class="row">
+          <!-- Supplier -->
+          <div class="col-md-6 form-group">
+            <label for="poSupplier">{{ 'PURCHASE.SUPPLIER_LABEL' | translate }} <span class="required">*</span></label>
+            <select
+              id="poSupplier"
+              name="poSupplier"
+              [ngModel]="formSupplierId()"
+              (ngModelChange)="formSupplierId.set($event)"
+              [disabled]="isEditMode"
+            >
+              @for (s of suppliers(); track s.id) {
+                <option [value]="s.id">{{ s.company_name }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Gold Karat -->
+          <div class="col-md-3 form-group">
+            <label for="poKarat">{{ 'PURCHASE.KARAT_LABEL' | translate }}</label>
+            <select
+              id="poKarat"
+              name="poKarat"
+              [ngModel]="formGoldKarat()"
+              (ngModelChange)="formGoldKarat.set($event)"
+            >
+              <option value="24K">24K</option>
+              <option value="22K">22K</option>
+              <option value="21K">21K</option>
+              <option value="18K">18K</option>
+            </select>
+          </div>
+
+          @if (isEditMode) {
+            <!-- Status -->
+            <div class="col-md-3 form-group">
+              <label for="poStatus">{{ 'PURCHASE.STATUS_LABEL' | translate }}</label>
+              <select
+                id="poStatus"
+                name="poStatus"
+                [ngModel]="formStatus()"
+                (ngModelChange)="formStatus.set($event)"
+              >
+                <option value="pending">{{ 'PURCHASE.STATUS_PENDING' | translate }}</option>
+                <option value="received">{{ 'PURCHASE.STATUS_RECEIVED' | translate }}</option>
+                <option value="cancelled">{{ 'PURCHASE.STATUS_CANCELLED' | translate }}</option>
+              </select>
+            </div>
+          }
+        </div>
+
+        <div class="row">
+          <!-- Item Description -->
+          <div class="col-12 form-group">
+            <label for="poItemDescription">{{ 'PURCHASE.ITEM_LABEL' | translate }} <span class="required">*</span></label>
+            <input
+              type="text"
+              id="poItemDescription"
+              name="poItemDescription"
+              [ngModel]="formItemDescription()"
+              (ngModelChange)="formItemDescription.set($event)"
+              placeholder="e.g. 1kg 24K gold bullion bar"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Section: Weight & Cost -->
+        <div class="form-section-title">
+          <i class="pi pi-calculator"></i> {{ 'PURCHASE.COST_TITLE' | translate }}
+        </div>
+
+        <div class="row">
+          <!-- Weight -->
+          <div class="col-md-4 form-group">
+            <label for="poWeight">{{ 'PURCHASE.WEIGHT_LABEL' | translate }} <span class="required">*</span></label>
+            <div class="input-with-unit">
+              <input
+                type="number"
+                id="poWeight"
+                name="poWeight"
+                step="0.01"
+                min="0"
+                [ngModel]="formWeightGrams()"
+                (ngModelChange)="formWeightGrams.set($event)"
+                required
+              />
+              <span class="input-unit">g</span>
+            </div>
+          </div>
+
+          <!-- Unit Cost -->
+          <div class="col-md-4 form-group">
+            <label for="poUnitCost">{{ 'PURCHASE.UNIT_COST_LABEL' | translate }} <span class="required">*</span></label>
+            <div class="input-with-unit">
+              <input
+                type="number"
+                id="poUnitCost"
+                name="poUnitCost"
+                step="0.01"
+                min="0"
+                [ngModel]="formUnitCostPerGram()"
+                (ngModelChange)="formUnitCostPerGram.set($event)"
+                required
+              />
+              <span class="input-unit">{{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+            </div>
+          </div>
+
+          <!-- Total Cost (calculated) -->
+          <div class="col-md-4 form-group">
+            <label>{{ 'PURCHASE.TOTAL_LABEL' | translate }}</label>
+            <div class="total-cost-display">
+              {{ totalCost() | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Notes -->
+          <div class="col-12 form-group">
+            <label for="poNotes">{{ 'PURCHASE.NOTES_LABEL' | translate }}</label>
+            <input
+              type="text"
+              id="poNotes"
+              name="poNotes"
+              [ngModel]="formNotes()"
+              (ngModelChange)="formNotes.set($event)"
+              placeholder="e.g. Delivered to Cairo HQ vault"
+            />
+          </div>
+        </div>
+
+        <!-- Messages -->
+        @if (errorMessage()) {
+          <div class="error-banner">
+            <i class="pi pi-exclamation-circle error-icon"></i>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        @if (successMessage()) {
+          <div class="success-banner">
+            <i class="pi pi-check-circle success-icon"></i>
+            <span>{{ successMessage() }}</span>
+          </div>
+        }
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="isLoading()">
+            <i class="pi pi-times"></i>
+            <span>{{ 'PURCHASE.CANCEL' | translate }}</span>
+          </button>
+
+          <button type="submit" class="btn-gold-submit" [disabled]="isLoading() || !formItemDescription().trim()">
+            @if (isLoading()) {
+              <i class="pi pi-spin pi-spinner"></i>
+              <span>{{ 'SETTINGS.SAVE' | translate }}...</span>
+            } @else {
+              <i class="pi pi-check"></i>
+              <span>{{ 'SETTINGS.SAVE' | translate }}</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

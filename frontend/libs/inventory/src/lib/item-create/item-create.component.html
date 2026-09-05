@@ -1,0 +1,196 @@
+<div class="create-container">
+  <div class="create-header">
+    <h2 class="page-title">{{ (isEditMode() ? 'INVENTORY.EDIT_TITLE' : 'INV_CREATE.TITLE') | translate }}</h2>
+    <p class="page-subtitle" *ngIf="!isEditMode()">{{ 'INV_CREATE.SUBTITLE' | translate }}</p>
+  </div>
+
+  @if (isPageLoading()) {
+    <app-page-loader [message]="(isEditMode() ? 'INVENTORY.EDIT_TITLE' : 'INV_CREATE.TITLE') | translate" />
+  } @else {
+    <div class="form-card card-premium">
+      <form (submit)="onSubmit()" class="premium-form">
+        <div class="row">
+          <!-- Barcode Field -->
+          <div class="col-md-6 form-group">
+            <label for="barcode">{{ 'INV_CREATE.BARCODE' | translate }} <span class="required">*</span></label>
+            <div class="input-action-wrapper">
+              <input
+                type="text"
+                id="barcode"
+                name="barcode"
+                [ngModel]="barcode()"
+                (ngModelChange)="barcode.set($event)"
+                [placeholder]="'INV_CREATE.BARCODE_PLACEHOLDER' | translate"
+                [disabled]="isEditMode()"
+                required
+              />
+              <button type="button" class="btn-secondary-gold" (click)="generateRandomBarcode()" *ngIf="!isEditMode()">
+                <i class="pi pi-refresh"></i> {{ 'INV_CREATE.AUTO' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Gold Karat Field -->
+          <div class="col-md-6 form-group">
+            <label for="karat">{{ 'INVENTORY.COL_KARAT' | translate }} <span class="required">*</span></label>
+            <select
+              id="karat"
+              name="karat"
+              [ngModel]="goldKarat()"
+              (ngModelChange)="goldKarat.set($event)"
+            >
+              <option value="24K">24K</option>
+              <option value="22K">22K</option>
+              <option value="21K">21K</option>
+              <option value="18K">18K</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Gross Weight -->
+          <div class="col-md-6 form-group">
+            <label for="grossWeight">{{ 'INV_CREATE.GROSS_WEIGHT' | translate }} <span class="required">*</span></label>
+            <div class="unit-input-wrapper">
+              <input
+                type="number"
+                step="0.001"
+                id="grossWeight"
+                name="grossWeight"
+                [ngModel]="grossWeight()"
+                (ngModelChange)="grossWeight.set($event)"
+                placeholder="e.g. 8.5"
+                required
+              />
+              <span class="unit-tag">g</span>
+            </div>
+          </div>
+
+          <!-- Net Gold Weight -->
+          <div class="col-md-6 form-group">
+            <label for="netGoldWeight">{{ 'INV_CREATE.NET_WEIGHT' | translate }} <span class="required">*</span></label>
+            <div class="unit-input-wrapper">
+              <input
+                type="number"
+                step="0.001"
+                id="netGoldWeight"
+                name="netGoldWeight"
+                [ngModel]="netGoldWeight()"
+                (ngModelChange)="netGoldWeight.set($event)"
+                placeholder="e.g. 7.0"
+                required
+              />
+              <span class="unit-tag">g</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Making Charge Rate -->
+          <div class="col-md-6 form-group">
+            <label for="makingRate">{{ 'INVENTORY.COL_MAKING_CHARGE' | translate }}</label>
+            <input
+              type="number"
+              step="0.01"
+              id="makingRate"
+              name="makingRate"
+              [ngModel]="makingChargeRate()"
+              (ngModelChange)="makingChargeRate.set($event)"
+              placeholder="e.g. 12.00"
+            />
+          </div>
+
+          <!-- Making Charge Type -->
+          <div class="col-md-6 form-group">
+            <label for="makingType">{{ 'INV_CREATE.MAKING_BASIS' | translate }}</label>
+            <select
+              id="makingType"
+              name="makingType"
+              [ngModel]="makingChargeType()"
+              (ngModelChange)="makingChargeType.set($event)"
+            >
+              <option value="per_gram">{{ 'INV_CREATE.MAKING_GRAM' | translate }}</option>
+              <option value="fixed">{{ 'INV_CREATE.MAKING_FIXED' | translate }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Stone Charge -->
+          <div class="col-md-6 form-group">
+            <label for="stoneCharge">{{ 'INV_CREATE.STONE_CHARGE' | translate }}</label>
+            <input
+              type="number"
+              id="stoneCharge"
+              name="stoneCharge"
+              [ngModel]="stoneCharge()"
+              (ngModelChange)="stoneCharge.set($event)"
+              placeholder="e.g. 150.00"
+            />
+          </div>
+
+          <!-- Wastage Percent -->
+          <div class="col-md-6 form-group">
+            <label for="wastage">{{ 'INV_CREATE.WASTAGE_LABEL' | translate }} (%)</label>
+            <div class="unit-input-wrapper">
+              <input
+                type="number"
+                step="0.1"
+                id="wastage"
+                name="wastage"
+                [ngModel]="wastagePercent()"
+                (ngModelChange)="wastagePercent.set($event)"
+                placeholder="e.g. 5"
+              />
+              <span class="unit-tag">%</span>
+            </div>
+          </div>
+
+          <!-- Status Field (Only in Edit Mode) -->
+          @if (isEditMode()) {
+            <div class="col-md-6 form-group">
+              <label for="status">{{ 'INVENTORY.COL_STATUS' | translate }} <span class="required">*</span></label>
+              <select
+                id="status"
+                name="status"
+                [ngModel]="status()"
+                (ngModelChange)="status.set($event)"
+              >
+                <option value="in_stock">{{ 'INVENTORY.STATUS_AVAILABLE' | translate }}</option>
+                <option value="reserved">{{ 'INVENTORY.STATUS_RESERVED' | translate }}</option>
+                <option value="sold">{{ 'INVENTORY.STATUS_SOLD' | translate }}</option>
+              </select>
+            </div>
+          }
+        </div>
+
+        @if (errorMessage()) {
+          <div class="error-banner">
+            <i class="pi pi-exclamation-circle error-icon"></i>
+            <span>{{ errorMessage() | translate }}</span>
+          </div>
+        }
+
+        @if (successMessage()) {
+          <div class="success-banner">
+            <i class="pi pi-check-circle success-icon"></i>
+            <span>{{ successMessage() | translate }}</span>
+          </div>
+        }
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="isLoading()">
+            <i class="pi pi-times"></i> {{ 'INVENTORY.CANCEL' | translate }}
+          </button>
+          <button type="submit" class="btn-gold-submit" [disabled]="isLoading()">
+            @if (isLoading()) {
+              <i class="pi pi-spin pi-spinner"></i> {{ (isEditMode() ? 'INVENTORY.SAVE' : 'INV_CREATE.REGISTER') | translate }}...
+            } @else {
+              <i class="pi pi-check"></i> {{ (isEditMode() ? 'INVENTORY.SAVE' : 'INV_CREATE.REGISTER') | translate }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

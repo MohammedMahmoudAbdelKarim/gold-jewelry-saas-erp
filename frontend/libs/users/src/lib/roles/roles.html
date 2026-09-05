@@ -1,0 +1,194 @@
+<div class="roles-container" [dir]="languageService.direction()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2 class="page-title">
+        <i class="pi pi-shield"></i>
+        {{ 'ROLES.TITLE' | translate }}
+      </h2>
+      <p class="page-subtitle">{{ 'ROLES.SUBTITLE' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-navigation">
+    <a routerLink="/users" class="tab-link">{{ 'USERS.TAB_EMPLOYEES' | translate }}</a>
+    <a routerLink="/users/roles" class="tab-link active">{{ 'USERS.TAB_ROLES' | translate }}</a>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon-wrap blue">
+        <i class="pi pi-shield"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'ROLES.STATS_TOTAL' | translate }}</span>
+        <span class="stat-value">{{ totalRolesCount() }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon-wrap gold">
+        <i class="pi pi-lock"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'ROLES.STATS_SYSTEM' | translate }}</span>
+        <span class="stat-value">{{ systemRolesCount() }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon-wrap purple">
+        <i class="pi pi-sliders-h"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'ROLES.STATS_CUSTOM' | translate }}</span>
+        <span class="stat-value">{{ customRolesCount() }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon-wrap green">
+        <i class="pi pi-key"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'ROLES.STATS_PERMISSIONS' | translate }}</span>
+        <span class="stat-value">{{ totalPermissions() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  @if (successMessage()) {
+    <div class="toast-message success">
+      <i class="pi pi-check-circle"></i>
+      <span>{{ successMessage() }}</span>
+    </div>
+  }
+  @if (errorMessage()) {
+    <div class="toast-message error">
+      <i class="pi pi-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Action & Filter Bar -->
+  <div class="controls-bar">
+    <div class="search-box">
+      <i class="pi pi-search search-icon"></i>
+      <input
+        type="text"
+        [placeholder]="'ROLES.SEARCH_PLACEHOLDER' | translate"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="filters-wrap">
+      <!-- Type Filter -->
+      <div class="select-wrapper">
+        <select [ngModel]="selectedTypeFilter()" (ngModelChange)="selectedTypeFilter.set($event)">
+          <option value="">{{ 'ROLES.FILTER_ALL' | translate }}</option>
+          <option value="system">{{ 'ROLES.FILTER_SYSTEM' | translate }}</option>
+          <option value="custom">{{ 'ROLES.FILTER_CUSTOM' | translate }}</option>
+        </select>
+      </div>
+
+      <!-- Create Button -->
+      <a routerLink="new" class="btn-primary" style="text-decoration: none;">
+        <i class="pi pi-plus"></i>
+        <span>{{ 'ROLES.CREATE_ROLE' | translate }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Roles Table Card -->
+  <div class="table-card card-premium">
+    @if (isLoading() && roles().length === 0) {
+      <app-page-loader [message]="'ROLES.LOADING' | translate" />
+    } @else if (filteredRoles().length === 0) {
+      <div class="empty-state">
+        <i class="pi pi-shield empty-icon"></i>
+        <h3>{{ 'ROLES.NO_ROLES' | translate }}</h3>
+        <p>{{ 'ROLES.NO_ROLES_DESC' | translate }}</p>
+      </div>
+    } @else {
+      <app-shared-table
+        [data]="filteredRoles()"
+        [columns]="tableColumns"
+        [isLoading]="isLoading()"
+        [errorMessage]="errorMessage()"
+        [(currentPage)]="currentPage"
+        [(pageSize)]="pageSize"
+        [pageSizeOptions]="[5, 10, 20]"
+        noItemsMessage="ROLES.NO_ROLES"
+      >
+        <!-- Role name custom template -->
+        <ng-template appCellTemplate="roleName" let-role>
+          <div class="role-cell">
+            <div class="role-icon-wrap">
+              <i class="pi pi-shield"></i>
+            </div>
+            <span class="role-name-text">{{ translateRole(role.name) }}</span>
+          </div>
+        </ng-template>
+
+        <!-- Role type custom template -->
+        <ng-template appCellTemplate="type" let-role>
+          <span class="type-badge" [class.system]="isSystemRole(role.name)" [class.custom]="!isSystemRole(role.name)">
+            <span class="type-dot"></span>
+            {{ isSystemRole(role.name) ? ('ROLES.TYPE_SYSTEM' | translate) : ('ROLES.TYPE_CUSTOM' | translate) }}
+          </span>
+        </ng-template>
+
+        <!-- Permissions count custom template -->
+        <ng-template appCellTemplate="permissions" let-role>
+          <div class="perm-count-cell">
+            <span class="perm-count">{{ getPermissionCount(role) }}</span>
+            <span class="perm-total"> / 18</span>
+          </div>
+        </ng-template>
+
+        <!-- Scopes custom template -->
+        <ng-template appCellTemplate="scopes" let-role>
+          <div class="perm-scopes-cell">
+            @if (role.permissions && role.permissions.length > 0) {
+              @for (perm of role.permissions.slice(0, 4); track perm) {
+                <span class="scope-tag">{{ perm }}</span>
+              }
+              @if (role.permissions.length > 4) {
+                <span class="scope-tag more">+{{ role.permissions.length - 4 }}</span>
+              }
+            } @else {
+              <span class="no-perms">—</span>
+            }
+          </div>
+        </ng-template>
+
+        <!-- Actions custom template -->
+        <ng-template appCellTemplate="actions" let-role>
+          <div class="actions-dropdown-wrapper" [class.has-active-dropdown]="activeDropdownRoleId() === role.id" style="position: relative;">
+            <button type="button" class="btn-action dropdown-trigger" (click)="toggleActionsDropdown($event, role.id)">
+              <i class="pi pi-ellipsis-v"></i>
+            </button>
+
+            @if (activeDropdownRoleId() === role.id) {
+              <div class="actions-dropdown-menu">
+                <a [routerLink]="['edit', role.id]" class="dropdown-item" style="text-decoration: none;">
+                  <i class="pi pi-pencil"></i>
+                  <span>{{ 'ROLES.EDIT_PERMISSIONS' | translate }}</span>
+                </a>
+
+                @if (!isSystemRole(role.name)) {
+                  <div class="dropdown-divider"></div>
+                  <button type="button" class="dropdown-item delete" (click)="deleteRole(role.id)">
+                    <i class="pi pi-trash"></i>
+                    <span>{{ 'ROLES.DELETE_ROLE' | translate }}</span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </ng-template>
+      </app-shared-table>
+    }
+  </div>
+</div>

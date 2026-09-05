@@ -1,0 +1,164 @@
+<div class="reports-container" [dir]="langService.direction()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2 class="page-title">
+        <i class="pi pi-chart-bar"></i>
+        {{ 'REPORTS.TITLE' | translate }}
+      </h2>
+      <p class="page-subtitle">{{ 'REPORTS.SUBTITLE' | translate }}</p>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <app-page-loader></app-page-loader>
+  } @else if (errorMessage()) {
+    <div class="error-banner">
+      <i class="pi pi-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  } @else if (summary(); as s) {
+    <!-- Sales Section -->
+    <div class="section-block">
+      <h3 class="section-heading"><i class="pi pi-shopping-cart"></i> {{ 'REPORTS.SALES_SECTION' | translate }}</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrap gold"><i class="pi pi-wallet"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">{{ 'REPORTS.TOTAL_REVENUE' | translate }}</span>
+            <span class="stat-value">{{ s.sales.totalRevenue | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap blue"><i class="pi pi-receipt"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">{{ 'REPORTS.TRANSACTION_COUNT' | translate }}</span>
+            <span class="stat-value">{{ s.sales.transactionCount }}</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap purple"><i class="pi pi-calculator"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">{{ 'REPORTS.AVG_TICKET' | translate }}</span>
+            <span class="stat-value">{{ s.sales.avgTicket | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap green"><i class="pi pi-sync"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">{{ 'REPORTS.BUYBACK_OFFSET' | translate }}</span>
+            <span class="stat-value">{{ s.sales.totalBuybackOffset | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Section -->
+    <div class="section-block">
+      <h3 class="section-heading"><i class="pi pi-box"></i> {{ 'REPORTS.INVENTORY_SECTION' | translate }}</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrap gold"><i class="pi pi-th-large"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">{{ 'REPORTS.TOTAL_ITEMS' | translate }}</span>
+            <span class="stat-value">{{ s.inventory.totalItems }}</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap green"><i class="pi pi-check-circle"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">{{ 'REPORTS.IN_STOCK' | translate }}</span>
+            <span class="stat-value">{{ s.inventory.inStockCount }}</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap blue"><i class="pi pi-tag"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">{{ 'REPORTS.SOLD_COUNT' | translate }}</span>
+            <span class="stat-value">{{ s.inventory.soldCount }}</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap purple"><i class="pi pi-star"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">{{ 'REPORTS.NET_GOLD_WEIGHT' | translate }}</span>
+            <span class="stat-value">{{ s.inventory.totalNetGoldWeightGrams | number: '1.2-2' }} g</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customers & Suppliers Section -->
+    <div class="two-col-grid">
+      <div class="section-block">
+        <h3 class="section-heading"><i class="pi pi-users"></i> {{ 'REPORTS.CUSTOMERS_SECTION' | translate }}</h3>
+        <div class="mini-stats-list">
+          <div class="mini-stat-row">
+            <span>{{ 'REPORTS.TOTAL_CUSTOMERS' | translate }}</span>
+            <strong>{{ s.customers.totalCustomers }}</strong>
+          </div>
+          <div class="mini-stat-row">
+            <span>{{ 'REPORTS.GOLD_BALANCE' | translate }}</span>
+            <strong>{{ s.customers.totalGoldBalanceGrams | number: '1.2-2' }} g</strong>
+          </div>
+          <div class="mini-stat-row">
+            <span>{{ 'REPORTS.CASH_BALANCE' | translate }}</span>
+            <strong>{{ s.customers.totalCashBalance | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="section-heading"><i class="pi pi-truck"></i> {{ 'REPORTS.SUPPLIERS_SECTION' | translate }}</h3>
+        <div class="mini-stats-list">
+          <div class="mini-stat-row">
+            <span>{{ 'REPORTS.TOTAL_SUPPLIERS' | translate }}</span>
+            <strong>{{ s.suppliers.totalSuppliers }}</strong>
+          </div>
+          <div class="mini-stat-row">
+            <span>{{ 'REPORTS.GOLD_RECEIVABLE' | translate }}</span>
+            <strong>{{ s.suppliers.totalGoldReceivableGrams | number: '1.2-2' }} g</strong>
+          </div>
+          <div class="mini-stat-row">
+            <span>{{ 'REPORTS.CASH_PAYABLE' | translate }}</span>
+            <strong>{{ s.suppliers.totalCashPayable | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="section-heading"><i class="pi pi-shopping-bag"></i> {{ 'REPORTS.PURCHASES_SECTION' | translate }}</h3>
+        <div class="mini-stats-list">
+          <div class="mini-stat-row">
+            <span>{{ 'REPORTS.TOTAL_ORDERS' | translate }}</span>
+            <strong>{{ s.purchases.totalOrders }}</strong>
+          </div>
+          <div class="mini-stat-row">
+            <span>{{ 'REPORTS.PENDING_ORDERS' | translate }}</span>
+            <strong>{{ s.purchases.pendingOrders }}</strong>
+          </div>
+          <div class="mini-stat-row">
+            <span>{{ 'REPORTS.TOTAL_SPEND' | translate }}</span>
+            <strong>{{ s.purchases.totalSpend | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="section-heading"><i class="pi pi-history"></i> {{ 'REPORTS.RECENT_SALES' | translate }}</h3>
+        @if (recentSales().length === 0) {
+          <p class="empty-hint">{{ 'REPORTS.NO_RECENT_SALES' | translate }}</p>
+        } @else {
+          <div class="mini-stats-list">
+            @for (sale of recentSales(); track sale.id) {
+              <div class="mini-stat-row">
+                <span>{{ sale.invoice_number }} — {{ sale.customer_name || ('POS.MOCK_CUSTOMER' | translate) }}</span>
+                <strong>{{ sale.total_amount | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</strong>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

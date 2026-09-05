@@ -1,0 +1,60 @@
+# Project Constitution: Gold Jewelry SaaS ERP
+
+## Core Principles
+- This is a modern, responsive, and highly polished SaaS application.
+- All code must adhere to strict typing and modularity.
+- Avoid "vibe coding"; follow this constitution strictly.
+
+## 6. Feature Development Workflow (Business-First)
+- **Do NOT start by building UI components.**
+- Always begin by mapping out the **Business Flow** for the module.
+- Output the following architecture sequentially before writing component templates:
+  1. `Models` (Domain Interfaces / Types)
+  2. `Routes` (Module routing structure)
+  3. `APIs` (Backend integration services)
+  4. `Store` (NgRx Signal Store definitions)
+  5. `Services` (Business logic / Validation)
+  6. `Permissions` (Auth/RBAC guards)
+  7. `Components` (Logic / Smart & Dumb components)
+  8. `UI / Validation` (Templates, Forms, and styling)
+## 1. Tech Stack & Architecture
+- **Framework:** Angular 19+ (or latest stable).
+- **Architecture:** Nx Monorepo (`apps` and `libs`).
+- **Components:** Strict use of **Standalone Components** only. Do not use `NgModules` for features.
+- **State Management:** `@ngrx/signals` (Signal Store).
+- **Styling:** PrimeNG for UI components, Bootstrap for layout and spacing, + SCSS for custom styles. Avoid TailwindCSS unless explicitly approved. Use CSS Variables and Design Tokens strictly for theming.
+- **Data Grids:** AG Grid Community.
+- **Charts:** ApexCharts.
+- **PWA:** App must be configured as a Progressive Web App (PWA) with offline-first capabilities where possible, and a fullscreen desktop-like manifest.
+- **Routing:** All feature modules and large components MUST use Lazy Loading.
+
+## 2. Performance & Optimization (Lighthouse Goal: 95+)
+- Ensure a Lighthouse score of 95+ for Desktop and Mobile.
+- **Images:** All images MUST be served in WebP format. No PNG or JPEG unless absolutely necessary for fallback.
+- Avoid heavy synchronous operations blocking the main thread.
+
+## 3. Strict Coding Standards
+- **OnPush Everywhere:** ALL components MUST use `ChangeDetectionStrategy.OnPush`. This is enforced at the Nx schematics level.
+- **No Functions in Templates:** Do NOT bind functions or methods in HTML templates (e.g., `[class]="getClass()"`). Use Signals (`computed()`) or pure Pipes instead. Enforced via ESLint.
+- **TrackBy / Control Flow Tracking:** When using `@for`, you MUST explicitly provide a unique tracking expression (e.g., `@for (item of items(); track item.id)`).
+- **Modern Control Flow:** Use modern control flow (`@if`, `@for`, `@switch`) exclusively. Do not use `*ngIf` or `*ngFor`.
+- **Signals First:** Use Signals (`signal`, `computed`, `effect`) instead of RxJS `BehaviorSubject` where applicable, except when interfacing with HTTP or router events where RxJS is better suited.
+- Ensure strict TypeScript configuration (no `any`).
+
+## 4. Directory Structure (Nx)
+- `apps/gold-erp`: The host application shell.
+- `libs/core`: Singletons, base state, interceptors.
+- `libs/shared`: Reusable pipes, directives, standalone UI components.
+- `libs/ui`: The central design system (PrimeNG wrappers, CSS design tokens).
+- `libs/[feature]`: Domain-specific libraries (e.g., `inventory`, `sales`).
+
+## 5. UI/UX Aesthetics
+- Implement "Premium" design aesthetics.
+- Use a harmonious color palette (HSL/modern colors) defined via CSS Variables.
+- Use smooth micro-animations for interactivity (hover states, dialogs).
+- Ensure native fullscreen layout experience.
+- **No Breadcrumbs:** Do NOT use or render breadcrumb navigation component in the UI shell layout. Page titles and layout headers must provide sufficient navigation context.
+- **Custom Select Dropdowns:** Reusable premium custom dropdown styles (`.dropdown-wrap`, `.dropdown-btn`, `.dropdown-panel`) must be used globally for selector controls. Dropdown panels must support proper `z-index` layering (1050+) and prevent clipping by ensuring parent cards/containers have `overflow: visible`. The font size of selection elements and dropdown option items must not exceed a maximum of `1rem`.
+- **Premium Action Buttons:** Primary and gold action buttons must use a gold-to-yellow gradient background (`linear-gradient(135deg, #CD9C20 0%, #E5B233 100%)`), dark text (`#111111`), rounded corners (`8px`), and a subtle gold shadow (`rgba(205, 156, 32, 0.15)`). Use the `.btn-premium-action` class for standard elements, and override PrimeNG's `.p-button-primary` globally with this gradient style.
+
+

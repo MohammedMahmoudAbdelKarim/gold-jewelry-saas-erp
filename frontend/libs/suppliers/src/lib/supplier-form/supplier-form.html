@@ -1,0 +1,149 @@
+<div class="create-container" [dir]="languageService.direction()">
+  <!-- Page Header -->
+  <div class="create-header">
+    <h2 class="page-title">{{ (isEditMode ? 'SUPPLIERS.EDIT_SUPPLIER' : 'SUPPLIERS.ADD_SUPPLIER') | translate }}</h2>
+    <p class="page-subtitle">
+      {{ 'SUPPLIERS.SUBTITLE' | translate }}
+    </p>
+  </div>
+
+  @if (isLoading() && !isEditMode) {
+    <app-page-loader message="Preparing form data..." />
+  } @else {
+    <div class="form-card card-premium">
+      <form (submit)="saveSupplier()" class="premium-form">
+        <!-- Section: Supplier Details -->
+        <div class="form-section-title">
+          <i class="pi pi-truck"></i> {{ 'SUPPLIERS.TITLE' | translate }}
+        </div>
+
+        <div class="row">
+          <!-- Company Name -->
+          <div class="col-md-6 form-group">
+            <label for="supplierCompanyName">{{ 'SUPPLIERS.COMPANY_LABEL' | translate }} <span class="required">*</span></label>
+            <input
+              type="text"
+              id="supplierCompanyName"
+              name="supplierCompanyName"
+              [ngModel]="formCompanyName()"
+              (ngModelChange)="formCompanyName.set($event)"
+              placeholder="e.g. Cairo Gold Refinery Co."
+              required
+            />
+          </div>
+
+          <!-- Contact Name -->
+          <div class="col-md-6 form-group">
+            <label for="supplierContactName">{{ 'SUPPLIERS.CONTACT_LABEL' | translate }}</label>
+            <input
+              type="text"
+              id="supplierContactName"
+              name="supplierContactName"
+              [ngModel]="formContactName()"
+              (ngModelChange)="formContactName.set($event)"
+              placeholder="e.g. Hassan Fathy"
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Phone -->
+          <div class="col-md-6 form-group">
+            <label for="supplierPhone">{{ 'SUPPLIERS.PHONE_LABEL' | translate }}</label>
+            <app-phone-input
+              inputId="supplierPhone"
+              [(code)]="formPhoneCode"
+              [(number)]="formPhone"
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-6 form-group">
+            <label for="supplierEmail">{{ 'SUPPLIERS.EMAIL_LABEL' | translate }}</label>
+            <input
+              type="email"
+              id="supplierEmail"
+              name="supplierEmail"
+              [ngModel]="formEmail()"
+              (ngModelChange)="formEmail.set($event)"
+              placeholder="e.g. sales@supplier.com"
+            />
+          </div>
+        </div>
+
+        <!-- Section: Payable Account -->
+        <div class="form-section-title">
+          <i class="pi pi-wallet"></i> {{ 'SUPPLIERS.BALANCES_TITLE' | translate }}
+        </div>
+
+        <div class="row">
+          <!-- Gold Receivable -->
+          <div class="col-md-6 form-group">
+            <label for="supplierGoldReceivable">{{ 'SUPPLIERS.GOLD_RECEIVABLE_LABEL' | translate }}</label>
+            <div class="input-with-unit">
+              <input
+                type="number"
+                id="supplierGoldReceivable"
+                name="supplierGoldReceivable"
+                step="0.01"
+                min="0"
+                [ngModel]="formGoldReceivable()"
+                (ngModelChange)="formGoldReceivable.set($event)"
+              />
+              <span class="input-unit">g</span>
+            </div>
+          </div>
+
+          <!-- Cash Payable -->
+          <div class="col-md-6 form-group">
+            <label for="supplierCashPayable">{{ 'SUPPLIERS.CASH_PAYABLE_LABEL' | translate }}</label>
+            <div class="input-with-unit">
+              <input
+                type="number"
+                id="supplierCashPayable"
+                name="supplierCashPayable"
+                step="0.01"
+                [ngModel]="formCashPayable()"
+                (ngModelChange)="formCashPayable.set($event)"
+              />
+              <span class="input-unit">{{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        @if (errorMessage()) {
+          <div class="error-banner">
+            <i class="pi pi-exclamation-circle error-icon"></i>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        @if (successMessage()) {
+          <div class="success-banner">
+            <i class="pi pi-check-circle success-icon"></i>
+            <span>{{ successMessage() }}</span>
+          </div>
+        }
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="isLoading()">
+            <i class="pi pi-times"></i>
+            <span>{{ 'SUPPLIERS.CANCEL' | translate }}</span>
+          </button>
+
+          <button type="submit" class="btn-gold-submit" [disabled]="isLoading() || !formCompanyName().trim()">
+            @if (isLoading()) {
+              <i class="pi pi-spin pi-spinner"></i>
+              <span>{{ 'SETTINGS.SAVE' | translate }}...</span>
+            } @else {
+              <i class="pi pi-check"></i>
+              <span>{{ 'SETTINGS.SAVE' | translate }}</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

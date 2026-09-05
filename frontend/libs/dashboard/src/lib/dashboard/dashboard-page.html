@@ -1,0 +1,29 @@
+<div class="dashboard-page">
+  <app-dashboard-header />
+
+  @if (store.isLoading()) {
+    <app-page-loader message="Loading dashboard..." />
+  } @else {
+    <div class="dashboard-grid">
+      @for (widget of store.widgets(); track widget) {
+        <div [class]="'grid-item ' + widgetSpan[widget]">
+          @switch (widget) {
+            @case ('quick-actions') { <app-quick-actions-widget /> }
+            @case ('kpis') { <app-kpi-grid-widget /> }
+            @case ('gold-price') { <app-gold-price-widget /> }
+            @case ('sales-chart') { <app-sales-chart-widget /> }
+            @case ('revenue-chart') { <app-revenue-chart-widget /> }
+            @case ('category-chart') { <app-category-chart-widget /> }
+            @case ('top-selling') { <app-top-selling-widget /> }
+            @case ('dead-stock') { <app-dead-stock-widget /> }
+            @case ('low-stock') { <app-low-stock-widget /> }
+            @case ('recent-sales') { <app-recent-sales-widget /> }
+            @case ('pending-tasks') { <app-pending-tasks-widget /> }
+            @case ('notifications') { <app-dashboard-notifications-widget /> }
+            @case ('activity') { <app-activity-timeline-widget /> }
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,117 @@
+<div class="accounting-container" [dir]="langService.direction()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2 class="page-title">
+        <i class="pi pi-wallet"></i>
+        {{ 'ACCOUNTING.TITLE' | translate }}
+      </h2>
+      <p class="page-subtitle">{{ 'ACCOUNTING.SUBTITLE' | translate }}</p>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner">
+      <i class="pi pi-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  @if (overview(); as o) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrap green"><i class="pi pi-arrow-up-right"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">{{ 'ACCOUNTING.TOTAL_REVENUE' | translate }}</span>
+          <span class="stat-value">{{ o.totalRevenue | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap blue"><i class="pi pi-arrow-down-left"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">{{ 'ACCOUNTING.TOTAL_EXPENSES' | translate }}</span>
+          <span class="stat-value">{{ o.totalExpenses | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap gold"><i class="pi pi-chart-line"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">{{ 'ACCOUNTING.NET_POSITION' | translate }}</span>
+          <span class="stat-value" [class.negative]="o.netPosition < 0">{{ o.netPosition | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap purple"><i class="pi pi-users"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">{{ 'ACCOUNTING.CUSTOMER_BALANCES' | translate }}</span>
+          <span class="stat-value">{{ o.customerBalances | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap blue"><i class="pi pi-truck"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">{{ 'ACCOUNTING.SUPPLIER_PAYABLES' | translate }}</span>
+          <span class="stat-value">{{ o.supplierPayables | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Ledger -->
+  <div class="section-block">
+    <div class="section-header-row">
+      <h3 class="section-heading"><i class="pi pi-book"></i> {{ 'ACCOUNTING.LEDGER_TITLE' | translate }}</h3>
+      <div class="search-box">
+        <i class="pi pi-search search-icon"></i>
+        <input
+          type="text"
+          [placeholder]="'TOOLBAR.SEARCH' | translate"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </div>
+    </div>
+
+    <div class="table-card">
+      <app-shared-table
+        [data]="filteredLedger()"
+        [columns]="tableColumns"
+        [isLoading]="isLoading()"
+        [errorMessage]="null"
+        [(currentPage)]="currentPage"
+        [(pageSize)]="pageSize"
+        noItemsMessage="ACCOUNTING.NO_ENTRIES"
+      >
+        <!-- Date custom template -->
+        <ng-template appCellTemplate="date" let-entry>
+          <span class="phone-text">{{ entry.date | date: 'mediumDate' }}</span>
+        </ng-template>
+
+        <!-- Reference custom template -->
+        <ng-template appCellTemplate="reference" let-entry>
+          <span class="reference-text">{{ entry.reference }}</span>
+        </ng-template>
+
+        <!-- Description custom template -->
+        <ng-template appCellTemplate="description" let-entry>
+          <span class="phone-text">{{ entry.description }}</span>
+        </ng-template>
+
+        <!-- Type custom template -->
+        <ng-template appCellTemplate="type" let-entry>
+          <span class="type-badge" [class]="entry.type">
+            <i class="pi" [class.pi-arrow-up-right]="entry.type === 'revenue'" [class.pi-arrow-down-left]="entry.type === 'expense'"></i>
+            {{ 'ACCOUNTING.TYPE_' + (entry.type | uppercase) | translate }}
+          </span>
+        </ng-template>
+
+        <!-- Amount custom template -->
+        <ng-template appCellTemplate="amount" let-entry>
+          <span class="amount-text" [class]="entry.type">
+            {{ entry.type === 'expense' ? '-' : '+' }}{{ entry.amount | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}
+          </span>
+        </ng-template>
+      </app-shared-table>
+    </div>
+  </div>
+</div>

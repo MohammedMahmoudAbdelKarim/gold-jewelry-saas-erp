@@ -1,0 +1,10 @@
+{
+  "name": "sales",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/sales/src",
+  "prefix": "lib",
+  "tags": [],
+  "projectType": "library",
+  "// targets": "to see all targets run: nx show project sales --web",
+  "targets": {}
+}

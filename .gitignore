@@ -1,0 +1,40 @@
+# dependencies
+node_modules/
+
+# compiled output
+dist/
+tmp/
+out-tsc/
+backend/dist/
+frontend/dist/
+
+# Nx / Angular caches
+.nx/cache
+.nx/workspace-data
+.nx/migrate-runs
+.angular/
+
+# environment
+.env
+.env.local
+*.local
+
+# IDEs and editors
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.claude/worktrees
+.claude/settings.local.json
+
+# logs
+npm-debug.log
+yarn-error.log
+*.log
+
+# misc
+.DS_Store
+Thumbs.db
+/coverage

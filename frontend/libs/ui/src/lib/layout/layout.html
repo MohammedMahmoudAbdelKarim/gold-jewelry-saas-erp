@@ -1,0 +1,41 @@
+<div class="app-shell" [class.bare]="isBareLayout()" [class.collapsed]="layoutService.sidebarCollapsed()" [class.sidebar-open]="layoutService.sidebarOpen()">
+  @if (loadingService.isLoading()) {
+    <div class="global-loading-bar" role="progressbar" aria-label="Loading"></div>
+  }
+
+  @if (!isBareLayout()) {
+    @if (layoutService.sidebarOpen()) {
+      <button type="button" class="shell-backdrop" aria-label="Close menu" (click)="layoutService.closeMobileSidebar()"></button>
+    }
+
+    <aside class="shell-sidebar">
+      <app-sidebar></app-sidebar>
+    </aside>
+  }
+
+  <div class="shell-content">
+    @if (!isBareLayout()) {
+      <header class="shell-header">
+        <app-topbar></app-topbar>
+      </header>
+    }
+
+    <main class="shell-main" [@routeAnimations]="getRouteAnimationData()">
+      <router-outlet></router-outlet>
+    </main>
+
+    @if (!isBareLayout()) {
+      <footer class="shell-footer">
+        <div class="footer-content">
+          <div class="footer-left">
+            <span>{{ languageService.currentLanguage() === 'ar' ? '© ٢٠٢٦ نظام تخطيط موارد المؤسسات للذهب والمجوهرات. كل الحقوق محفوظة.' : '© 2026 Gold Jewelry SaaS ERP. All rights reserved.' }}</span>
+          </div>
+          <div class="footer-right">
+            <span class="status-dot"></span>
+            <span class="status-text">{{ languageService.currentLanguage() === 'ar' ? 'حالة النظام: متصل' : 'System Status: Connected' }}</span>
+          </div>
+        </div>
+      </footer>
+    }
+  </div>
+</div>

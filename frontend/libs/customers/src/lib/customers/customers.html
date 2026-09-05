@@ -1,0 +1,150 @@
+<div class="customers-container" [dir]="langService.direction()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2 class="page-title">
+        <i class="pi pi-users"></i>
+        {{ 'CUSTOMERS.TITLE' | translate }}
+      </h2>
+      <p class="page-subtitle">{{ 'CUSTOMERS.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="new" class="btn-primary" style="text-decoration: none;">
+        <i class="pi pi-plus"></i>
+        <span>{{ 'CUSTOMERS.ADD_CUSTOMER' | translate }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  @if (successMessage()) {
+    <div class="toast-message success">
+      <i class="pi pi-check-circle"></i>
+      <span>{{ successMessage()! | translate }}</span>
+    </div>
+  }
+  @if (errorMessage()) {
+    <div class="toast-message error">
+      <i class="pi pi-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Controls Bar -->
+  <div class="controls-bar">
+    <div class="search-box">
+      <i class="pi pi-search search-icon"></i>
+      <input
+        type="text"
+        [placeholder]="'TOOLBAR.SEARCH' | translate"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="table-card">
+    <app-shared-table
+      [data]="filteredCustomers()"
+      [columns]="tableColumns"
+      [isLoading]="isLoading()"
+      [errorMessage]="errorMessage()"
+      [(currentPage)]="currentPage"
+      [(pageSize)]="pageSize"
+      noItemsMessage="CUSTOMERS.NO_CUSTOMERS"
+    >
+        <!-- Customer Name custom template -->
+        <ng-template appCellTemplate="name" let-customer>
+          <div class="customer-cell">
+            <div class="customer-icon-wrap">
+              <i class="pi pi-user"></i>
+            </div>
+            <div class="customer-name-wrap">
+              <span class="customer-name-text">{{ customer.name }}</span>
+              @if (customer.email) {
+                <span class="customer-email-text">{{ customer.email }}</span>
+              }
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Phone custom template -->
+        <ng-template appCellTemplate="phone" let-customer>
+          <span class="phone-text">{{ customer.phone || '—' }}</span>
+        </ng-template>
+
+        <!-- ID custom template -->
+        <ng-template appCellTemplate="id_number" let-customer>
+          @if (customer.id_number) {
+            <div class="id-cell">
+              <span class="id-type-badge">{{ customer.id_type || 'CUSTOMERS.ID_UNKNOWN' | translate }}</span>
+              <span class="id-number-text">{{ customer.id_number }}</span>
+            </div>
+          } @else {
+            <span class="phone-text">—</span>
+          }
+        </ng-template>
+
+        <!-- Gold Balance custom template -->
+        <ng-template appCellTemplate="gold_balance_grams" let-customer>
+          <span class="balance-badge gold" [class.zero]="!customer.gold_balance_grams">
+            {{ customer.gold_balance_grams | number: '1.2-2' }} g
+          </span>
+        </ng-template>
+
+        <!-- Cash Balance custom template -->
+        <ng-template appCellTemplate="cash_balance" let-customer>
+          <span class="balance-badge cash" [class.zero]="!customer.cash_balance">
+            {{ customer.cash_balance | number: '1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}
+          </span>
+        </ng-template>
+
+        <!-- Actions custom template -->
+        <ng-template appCellTemplate="actions" let-customer>
+          <div class="actions-dropdown-wrapper" [class.has-active-dropdown]="activeDropdownCustomerId() === customer.id" style="position: relative;">
+            <button type="button" class="btn-action dropdown-trigger" (click)="toggleActionsDropdown($event, customer.id)">
+              <i class="pi pi-ellipsis-v"></i>
+            </button>
+
+            @if (activeDropdownCustomerId() === customer.id) {
+              <div class="actions-dropdown-menu">
+                <a [routerLink]="['edit', customer.id]" class="dropdown-item" style="text-decoration: none;">
+                  <i class="pi pi-pencil"></i>
+                  <span>{{ 'USERS.EDIT' | translate }}</span>
+                </a>
+                <button type="button" class="dropdown-item delete" (click)="deleteCustomer(customer.id)">
+                  <i class="pi pi-trash"></i>
+                  <span>{{ 'CUSTOMERS.DELETE' | translate }}</span>
+                </button>
+              </div>
+            }
+          </div>
+        </ng-template>
+      </app-shared-table>
+  </div>
+
+  <!-- Custom Delete Confirmation Modal -->
+  @if (showDeleteConfirmModal()) {
+    <div class="confirm-modal-overlay" (click)="cancelDelete()">
+      <div class="confirm-modal-card" (click)="$event.stopPropagation()">
+        <div class="confirm-modal-header">
+          <i class="pi pi-exclamation-triangle"></i>
+          <h3>{{ 'CUSTOMERS.DELETE_TITLE' | translate }}</h3>
+        </div>
+        <div class="confirm-modal-body">
+          <p>{{ 'CUSTOMERS.DELETE_CONFIRM' | translate }}</p>
+        </div>
+        <div class="confirm-modal-footer">
+          <button class="btn-cancel" (click)="cancelDelete()">
+            {{ 'CUSTOMERS.CANCEL' | translate }}
+          </button>
+          <button class="btn-delete" (click)="executeDeleteCustomer()">
+            <i class="pi pi-trash"></i>
+            <span>{{ 'CUSTOMERS.DELETE_BTN' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

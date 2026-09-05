@@ -1,0 +1,29 @@
+.phone-input-wrap {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+
+  .phone-code-dropdown {
+    width: 115px;
+    flex-shrink: 0;
+
+    .selected-val {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+  }
+
+  .flag-icon-img {
+    width: 20px;
+    height: 14px;
+    object-fit: cover;
+    border-radius: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .phone-number-input {
+    flex: 1;
+  }
+}

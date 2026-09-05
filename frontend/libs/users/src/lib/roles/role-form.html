@@ -1,0 +1,126 @@
+<div class="create-container" [dir]="languageService.direction()">
+  <!-- Page Header -->
+  <div class="create-header">
+    <h2 class="page-title">{{ isEditMode ? ('ROLES.FORM_TITLE_EDIT' | translate) : ('ROLES.FORM_TITLE_NEW' | translate) }}</h2>
+    <p class="page-subtitle">
+      {{ isEditMode ? ('ROLES.FORM_SUBTITLE_EDIT' | translate) : ('ROLES.FORM_SUBTITLE_NEW' | translate) }}
+    </p>
+  </div>
+
+  <!-- Messages -->
+  @if (successMessage()) {
+    <div class="toast-message success">
+      <i class="pi pi-check-circle"></i>
+      <span>{{ successMessage() }}</span>
+    </div>
+  }
+  @if (errorMessage()) {
+    <div class="toast-message error">
+      <i class="pi pi-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Form Layout -->
+  <div class="form-card card-premium">
+    @if (isLoading() && !isEditMode) {
+      <app-page-loader [message]="'ROLES.LOADING' | translate" />
+    } @else {
+      <form (ngSubmit)="saveRole()" class="premium-form">
+        <!-- Section: General -->
+        <div class="form-section">
+          <h3 class="section-title"><i class="pi pi-shield"></i> {{ 'ROLES.ROLE_PROFILE' | translate }}</h3>
+          
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label for="roleName">{{ 'ROLES.ROLE_NAME_LABEL' | translate }}</label>
+              <div class="input-wrap">
+                <i class="pi pi-tag input-icon"></i>
+                <input
+                  type="text"
+                  id="roleName"
+                  [placeholder]="'ROLES.ROLE_NAME_PLACEHOLDER' | translate"
+                  required
+                  name="roleName"
+                  [ngModel]="formName()"
+                  (ngModelChange)="formName.set($event)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Permission Matrix -->
+        <div class="form-section">
+          <h3 class="section-title"><i class="pi pi-th-large"></i> {{ 'ROLES.PERMISSION_MATRIX' | translate }}</h3>
+          
+          <div class="matrix-table-wrap">
+            <table class="matrix-table">
+              <thead>
+                <tr>
+                  <th class="col-module">{{ 'ROLES.COL_MODULE' | translate }}</th>
+                  <th class="col-toggle-all">{{ 'ROLES.COL_GRANT_ALL' | translate }}</th>
+                  <th class="col-permissions">{{ 'ROLES.COL_ACCESS' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (mod of matrix(); track mod.moduleKey; let modIdx = $index) {
+                  <tr>
+                    <td class="cell-module">
+                      <div class="module-name-wrap">
+                        <span class="module-icon"><i class="pi" [class]="mod.icon"></i></span>
+                        <strong>{{ mod.moduleKey | translate }}</strong>
+                      </div>
+                    </td>
+                    
+                    <td class="cell-toggle-all">
+                      <label class="custom-checkbox select-all-checkbox">
+                        <input
+                          type="checkbox"
+                          [checked]="isModuleAllChecked(mod)"
+                          (change)="toggleModuleAll(modIdx, $any($event.target).checked)"
+                        />
+                        <span class="checkbox-box"></span>
+                      </label>
+                    </td>
+
+                    <td class="cell-permissions">
+                      <div class="perms-flex-grid">
+                        @for (p of mod.permissions; track p.name; let pIdx = $index) {
+                          <label class="matrix-checkbox-item">
+                            <label class="custom-checkbox">
+                              <input
+                                type="checkbox"
+                                [checked]="p.checked"
+                                (change)="togglePermission(modIdx, pIdx)"
+                              />
+                              <span class="checkbox-box"></span>
+                            </label>
+                            <span class="checkbox-label">{{ p.labelKey | translate }}</span>
+                          </label>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <a routerLink="/users/roles" class="btn-secondary">{{ 'ROLES.CANCEL' | translate }}</a>
+          <button type="submit" class="btn-primary" [disabled]="isLoading()">
+            @if (isLoading()) {
+              <i class="pi pi-spin pi-spinner"></i>
+              <span>{{ 'ROLES.SAVING' | translate }}</span>
+            } @else {
+              <span>{{ 'ROLES.SAVE_ROLE' | translate }}</span>
+            }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>
