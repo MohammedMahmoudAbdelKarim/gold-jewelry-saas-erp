@@ -3,10 +3,6 @@
   "outputDirectory": "dist/apps/gold-erp/browser",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://gold-jewelry-erp-api.onrender.com/api/v1/$1"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

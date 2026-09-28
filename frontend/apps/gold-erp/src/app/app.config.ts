@@ -7,13 +7,13 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { authInterceptor } from '@frontend/auth';
-import { loadingInterceptor } from '@frontend/core';
+import { loadingInterceptor, mockDataInterceptor } from '@frontend/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes),
-    provideHttpClient(withInterceptors([authInterceptor, loadingInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, loadingInterceptor, mockDataInterceptor])),
     provideAnimationsAsync(),
     provideTranslateService({
       loader: provideTranslateHttpLoader({ prefix: './i18n/', suffix: '.json' })

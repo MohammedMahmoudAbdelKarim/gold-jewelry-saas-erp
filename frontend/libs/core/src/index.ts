@@ -7,3 +7,4 @@ export * from './lib/navigation/breadcrumb.service';
 export * from './lib/services/system-settings.service';
 export * from './lib/services/loading.service';
 export * from './lib/interceptors/loading.interceptor';
+export * from './lib/interceptors/mock-data.interceptor';
