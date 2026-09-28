@@ -1,6 +1,7 @@
 {
   "buildCommand": "npx nx build gold-erp --configuration=production",
   "outputDirectory": "dist/apps/gold-erp/browser",
+  "framework": null,
   "rewrites": [
     {
       "source": "/(.*)",

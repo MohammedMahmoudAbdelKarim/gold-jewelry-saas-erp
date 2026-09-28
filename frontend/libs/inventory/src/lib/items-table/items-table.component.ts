@@ -4,8 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { InventoryApiService } from '../api/inventory.service';
-import { AuthService } from '@frontend/auth';
-import { SystemSettingsService, LanguageService } from '@frontend/core';
+import { SystemSettingsService, LanguageService, AuthService } from '@frontend/core';
 import { SharedTableComponent, CellTemplateDirective, TableColumn } from '@frontend/ui';
 
 @Component({

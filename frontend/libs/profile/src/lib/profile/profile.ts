@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
-import { AuthService, UserProfile } from '@frontend/auth';
+import { AuthService, UserProfile } from '@frontend/core';
 import { InputMask } from 'primeng/inputmask';
 import { DatePicker } from 'primeng/datepicker';
 

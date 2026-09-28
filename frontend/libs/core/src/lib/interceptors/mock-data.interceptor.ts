@@ -148,9 +148,31 @@ export const mockDataInterceptor: HttpInterceptorFn = (req, next) => {
 
   // 4. Inventory Items Barcode lookup
   if (url.startsWith('/inventory/items/barcode/') && method === 'GET') {
-    const barcode = url.split('/').pop();
-    const item = db.inventory.find((i) => i.barcode === barcode);
-    return send(item || null);
+    const rawBarcode = url.split('/inventory/items/barcode/')[1].split('?')[0];
+    const barcode = decodeURIComponent(rawBarcode).trim();
+    const item = db.inventory.find((i) => i.barcode?.toLowerCase() === barcode.toLowerCase());
+    if (!item) {
+      return send(null);
+    }
+    const match = url.match(/goldRate=([0-9.]+)/);
+    const goldRate24 = match ? parseFloat(match[1]) : 3850;
+    const purities: Record<string, number> = { '24K': 1.0, '22K': 0.916, '21K': 0.875, '18K': 0.75 };
+    const purity = purities[item.gold_karat] || 0.875;
+    const netWeight = parseFloat(item.net_gold_weight) || parseFloat(item.gross_weight) || 5.0;
+    const metalVal = Math.round(netWeight * (goldRate24 * purity));
+    const makingRate = parseFloat(item.making_charge_rate) || 250;
+    const makingCharge = Math.round(netWeight * makingRate);
+    const stoneCharge = parseFloat(item.stone_charge) || 0;
+    const itemWithPricing = {
+      ...item,
+      pricing: {
+        metalValue: metalVal,
+        makingCharge: makingCharge,
+        stoneCharge: stoneCharge,
+        totalPrice: metalVal + makingCharge + stoneCharge,
+      }
+    };
+    return send(itemWithPricing);
   }
 
   // 5. Inventory Items (List, Create, Update, Delete)
@@ -193,22 +215,45 @@ export const mockDataInterceptor: HttpInterceptorFn = (req, next) => {
       return send(db.transactions);
     }
     if (method === 'POST') {
+      const invoiceNo = 'INV-' + new Date().getFullYear() + '-' + Math.floor(10000 + Math.random() * 90000);
+      const customer = db.customers.find((c) => c.id === reqBody['customerId']);
+      const customerName = customer ? customer.name : (reqBody['customerName'] || 'عميل نقدي (حساب افتراضي)');
+      
+      const subtotal = (reqBody['items'] || []).reduce((acc: number, curr: any) => acc + (curr.finalPrice || curr.pricing?.totalPrice || 0), 0);
+      const discount = reqBody['discountAmount'] || 0;
+      const tax = reqBody['taxAmount'] || 0;
+      const buybackTotal = (reqBody['buybacks'] || []).reduce((acc: number, curr: any) => acc + (curr.totalValuation || 0), 0);
+      const netCashPaid = Math.max(0, subtotal + tax - discount - buybackTotal);
+      
       const newTx = {
         id: 'tx-' + Date.now(),
-        invoice_number: 'INV-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000),
-        branch_name: 'Main Store Dubai',
-        customer_name: reqBody['customer_name'] || 'Walk-in Customer',
-        total_amount: reqBody['total_amount'] || 0,
-        total_gold_weight: reqBody['total_gold_weight'] || 0,
-        payment_method: reqBody['payment_method'] || 'Cash',
+        invoiceNumber: invoiceNo,
+        invoice_number: invoiceNo,
+        branch_name: 'Cairo HQ Branch (الفرع الرئيسي)',
+        customerName: customerName,
+        customer_name: customerName,
+        paymentMethod: reqBody['paymentMethod'] || 'cash',
+        payment_method: reqBody['paymentMethod'] || 'cash',
+        subtotal: subtotal,
+        discountAmount: discount,
+        discount_amount: discount,
+        taxAmount: tax,
+        tax_amount: tax,
+        buybackOffset: buybackTotal,
+        buyback_offset: buybackTotal,
+        netCashPaid: netCashPaid,
+        total_amount: netCashPaid,
+        total_gold_weight: (reqBody['items'] || []).reduce((acc: number, curr: any) => acc + (curr.net_gold_weight || 5), 0),
         created_at: new Date().toISOString(),
         items_count: reqBody['items']?.length || 1,
+        items: reqBody['items'] || [],
+        buybacks: reqBody['buybacks'] || [],
       };
       db.transactions.unshift(newTx);
       // Mark cart items as sold
       if (Array.isArray(reqBody['items'])) {
         for (const it of reqBody['items']) {
-          const invItem = db.inventory.find((i) => i.barcode === it.barcode || i.id === it.id);
+          const invItem = db.inventory.find((i) => i.id === it.inventoryItemId || i.barcode === it.barcode);
           if (invItem) invItem.status = 'sold';
         }
       }

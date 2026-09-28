@@ -11,8 +11,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { LanguageService, ThemeService, SystemSettingsService } from '@frontend/core';
-import { AuthService } from '@frontend/auth';
+import { LanguageService, ThemeService, SystemSettingsService, AuthService } from '@frontend/core';
 
 import { LayoutService } from '../services/layout.service';
 

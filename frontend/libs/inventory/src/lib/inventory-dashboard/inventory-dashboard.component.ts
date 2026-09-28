@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
 import { InventoryApiService } from '../api/inventory.service';
-import { AuthService } from '@frontend/auth';
-import { SystemSettingsService } from '@frontend/core';
+import { SystemSettingsService, AuthService } from '@frontend/core';
 import { ItemsTableComponent } from '../items-table/items-table.component';
 import { PageLoaderComponent } from '@frontend/ui';
 

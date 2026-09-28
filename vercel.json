@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd frontend && npm install && npx nx build gold-erp --configuration=production",
+  "outputDirectory": "frontend/dist/apps/gold-erp/browser",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

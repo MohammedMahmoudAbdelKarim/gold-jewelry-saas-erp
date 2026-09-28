@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { AuthService } from '../auth.service';
+import { AuthService } from '@frontend/core';
 
 @Component({
   selector: 'lib-auth',

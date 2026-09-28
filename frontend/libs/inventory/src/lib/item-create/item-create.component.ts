@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { InventoryApiService } from '../api/inventory.service';
-import { AuthService } from '@frontend/auth';
+import { AuthService } from '@frontend/core';
 import { PageLoaderComponent } from '@frontend/ui';
 
 @Component({

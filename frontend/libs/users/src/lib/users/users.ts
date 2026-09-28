@@ -4,8 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { AuthService } from '@frontend/auth';
-import { LanguageService } from '@frontend/core';
+import { AuthService, LanguageService } from '@frontend/core';
 import { SharedTableComponent, CellTemplateDirective, TableColumn } from '@frontend/ui';
 
 @Component({

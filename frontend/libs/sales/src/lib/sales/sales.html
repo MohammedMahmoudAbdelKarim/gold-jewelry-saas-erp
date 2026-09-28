@@ -1,250 +1,496 @@
 <div class="pos-shell" [dir]="languageService.direction()">
-  <!-- ─── Top Bar: Gold Rate Ticker ─── -->
-  <div class="pos-topbar">
-    <div class="topbar-left">
-      <h2 class="page-title">
-        <i class="pi pi-shopping-cart"></i>
-        {{ 'POS.TITLE' | translate }}
-      </h2>
-      <p class="page-subtitle">{{ 'POS.SUBTITLE' | translate }}</p>
-    </div>
-    <div class="topbar-rate">
-      <i class="pi pi-bolt pulse-gold"></i>
-      <span class="rate-label">{{ 'POS.LIVE_GOLD_RATE' | translate }}</span>
-      <div class="rate-input-wrap">
-        <input
-          type="number"
-          [ngModel]="goldRate24k()"
-          (ngModelChange)="goldRate24k.set($event)"
-          class="rate-input"
-        />
-        <span class="rate-unit">{{ 'POS.RATE_UNIT' | translate }}</span>
+  <!-- ─── 1. Header & Live Gold Rates Ticker ─── -->
+  <header class="pos-header">
+    <div class="pos-header-left">
+      <div class="pos-title-wrap">
+        <h1 class="pos-main-title">
+          <i class="pi pi-shopping-bag gold-icon"></i>
+          {{ 'POS.TITLE' | translate }}
+        </h1>
+        <div class="pos-meta-badges">
+          <span class="meta-pill branch-pill">
+            <i class="pi pi-building"></i>
+            {{ currentBranchName() }}
+          </span>
+          <span class="meta-pill cashier-pill">
+            <i class="pi pi-user"></i>
+            {{ currentUser()?.name || ('POS.CASHIER' | translate) }}
+          </span>
+          <span class="meta-pill time-pill">
+            <i class="pi pi-clock"></i>
+            {{ currentTime }}
+          </span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ─── Main 2-Column Layout ─── -->
-  <div class="pos-body">
+    <!-- Live Gold Rates Widget -->
+    <div class="pos-rate-board">
+      <div class="rate-primary-card">
+        <div class="rate-head">
+          <i class="pi pi-bolt gold-pulse"></i>
+          <span class="rate-title">{{ 'POS.LIVE_GOLD_RATE' | translate }}</span>
+        </div>
+        <div class="rate-input-container">
+          <input
+            type="number"
+            [ngModel]="goldRate24k()"
+            (ngModelChange)="goldRate24k.set($event)"
+            class="rate-editable-input"
+            title="Edit 24K Base Rate"
+          />
+          <span class="rate-currency">{{ 'POS.RATE_UNIT' | translate }}</span>
+        </div>
+      </div>
 
-    <!-- ═══ LEFT: Scanner + Cart ═══ -->
-    <div class="pos-left">
+      <!-- Quick Sub-Rates -->
+      <div class="rate-sub-chips">
+        <div class="sub-chip">
+          <span class="chip-karat">21K</span>
+          <span class="chip-val">{{ goldRate21k() | number:'1.0-0' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+        </div>
+        <div class="sub-chip">
+          <span class="chip-karat">18K</span>
+          <span class="chip-val">{{ goldRate18k() | number:'1.0-0' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </header>
 
-      <!-- Scanner -->
-      <div class="scanner-card">
-        <div class="scanner-row">
-          <div class="scanner-input-box">
-            <i class="pi pi-barcode scanner-ico"></i>
+  <!-- ─── 2. Main 2-Column POS Workspace ─── -->
+  <main class="pos-workspace">
+
+    <!-- ═══ LEFT COLUMN: Scanner + Quick Items + Cart ═══ -->
+    <section class="pos-left-col">
+
+      <!-- Barcode Scanner & Quick Entry -->
+      <div class="scanner-panel card-premium">
+        <div class="scanner-input-group">
+          <div class="scanner-field-wrapper">
+            <i class="pi pi-barcode barcode-lead-icon"></i>
             <input
               type="text"
-              id="barcode-scanner"
+              id="barcode-scanner-input"
               [ngModel]="barcodeInput()"
               (ngModelChange)="barcodeInput.set($event)"
               (keydown.enter)="scanBarcode()"
               [placeholder]="'POS.SCAN' | translate"
+              autocomplete="off"
               autofocus
             />
+            @if (barcodeInput()) {
+              <button type="button" class="btn-clear-input" (click)="barcodeInput.set('')">
+                <i class="pi pi-times"></i>
+              </button>
+            }
           </div>
-          <button type="button" class="btn-scan-action" (click)="scanBarcode()">
-            <i class="pi pi-search"></i>
+          <button type="button" class="btn-scan-trigger" (click)="scanBarcode()">
+            <i class="pi pi-plus"></i>
+            <span>{{ 'POS.SCAN_BTN' | translate }}</span>
           </button>
         </div>
 
+        <!-- Quick Catalog Demo Pills -->
+        <div class="quick-catalog-strip">
+          <span class="quick-catalog-label">
+            <i class="pi pi-sparkles"></i>
+            {{ 'POS.QUICK_ITEMS_TITLE' | translate }}
+          </span>
+          <div class="quick-chips-list">
+            @for (item of quickCatalog; track item.barcode) {
+              <button
+                type="button"
+                class="quick-item-btn"
+                (click)="scanBarcode(item.barcode)"
+                [title]="item.barcode"
+              >
+                <i class="pi" [ngClass]="item.icon"></i>
+                <span class="btn-item-name">{{ languageService.currentLanguage() === 'ar' ? item.name_ar : item.name }}</span>
+                <span class="btn-item-karat" [ngClass]="'karat-' + item.karat.toLowerCase()">{{ item.karat }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
         @if (errorMessage()) {
-          <div class="scan-error">
-            <i class="pi pi-exclamation-triangle"></i>
+          <div class="pos-alert-error">
+            <i class="pi pi-exclamation-circle"></i>
             <span>{{ errorMessage() | translate }}</span>
           </div>
         }
       </div>
 
-      <!-- Cart — styled as a running invoice line-item list -->
-      <div class="cart-card">
-        <div class="cart-header">
-          <h3><i class="pi pi-shopping-cart"></i> {{ 'POS.CART' | translate }}</h3>
-          <span class="cart-count">{{ cartItems().length }}</span>
+      <!-- Itemized Jewelry Cart Table -->
+      <div class="cart-panel card-premium">
+        <div class="cart-panel-header">
+          <div class="cart-header-title">
+            <h3>
+              <i class="pi pi-shopping-cart"></i>
+              {{ 'POS.CART' | translate }}
+            </h3>
+            <span class="cart-items-badge">
+              {{ cartItems().length }} {{ 'POS.ITEMS_COUNT' | translate }}
+              @if (totalNetWeight() > 0) {
+                • {{ totalNetWeight() | number:'1.2-2' }}g
+              }
+            </span>
+          </div>
+
+          @if (cartItems().length > 0 || buybacks().length > 0) {
+            <button type="button" class="btn-clear-cart" (click)="clearCart()">
+              <i class="pi pi-trash"></i>
+              <span>{{ 'POS.CLEAR_CART' | translate }}</span>
+            </button>
+          }
         </div>
 
-        @if (cartItems().length > 0) {
-          <div class="cart-table-head">
-            <span class="col-num">#</span>
-            <span class="col-item">{{ 'POS.COL_ITEM' | translate }}</span>
-            <span class="col-karat">{{ 'POS.COL_KARAT' | translate }}</span>
-            <span class="col-weight text-end">{{ 'INVENTORY.COL_WEIGHT' | translate }}</span>
-            <span class="col-price text-end">{{ 'POS.COL_PRICE' | translate }}</span>
-            <span class="col-remove"></span>
-          </div>
-        }
-
-        <div class="cart-items-list">
-          @for (item of cartItems(); track item.barcode; let idx = $index) {
-            <div class="cart-row">
-              <span class="col-num">{{ idx + 1 }}</span>
-              <div class="col-item">
-                <span class="item-name">{{ item.product_name }}</span>
-                <span class="meta-barcode">{{ item.barcode }}</span>
+        <!-- Cart Items List / Table -->
+        <div class="cart-table-container">
+          @if (cartItems().length > 0) {
+            <table class="pos-cart-table">
+              <thead>
+                <tr>
+                  <th class="th-num">#</th>
+                  <th class="th-item">{{ 'POS.COL_ITEM' | translate }}</th>
+                  <th class="th-karat">{{ 'POS.COL_KARAT' | translate }}</th>
+                  <th class="th-weight text-end">{{ 'POS.COL_WT' | translate }}</th>
+                  <th class="th-breakdown">{{ 'POS.COL_BREAKDOWN' | translate }}</th>
+                  <th class="th-price text-end">{{ 'POS.COL_PRICE' | translate }}</th>
+                  <th class="th-action"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of cartItems(); track item.barcode; let idx = $index) {
+                  <tr class="cart-item-row">
+                    <td class="td-num">{{ idx + 1 }}</td>
+                    <td class="td-item">
+                      <div class="item-title">{{ item.product_name }}</div>
+                      <div class="item-barcode-sku">
+                        <code>{{ item.barcode }}</code>
+                      </div>
+                    </td>
+                    <td class="td-karat">
+                      <span class="karat-badge" [ngClass]="'karat-' + item.gold_karat.toLowerCase()">
+                        {{ item.gold_karat }}
+                      </span>
+                    </td>
+                    <td class="td-weight text-end">
+                      <div class="weight-net">{{ item.net_gold_weight | number:'1.2-2' }}g <small>صافي</small></div>
+                      <div class="weight-gross text-muted">{{ item.gross_weight | number:'1.2-2' }}g قائم</div>
+                    </td>
+                    <td class="td-breakdown">
+                      <div class="breakdown-line">
+                        <span>ذهب: {{ item.pricing.metalValue | number:'1.0-0' }}</span>
+                        <span>+ مصنعية: {{ item.pricing.makingCharge | number:'1.0-0' }}</span>
+                      </div>
+                    </td>
+                    <td class="td-price text-end">
+                      <span class="price-val">{{ item.pricing.totalPrice | number:'1.2-2' }}</span>
+                      <small class="price-unit">{{ 'CUSTOMERS.CASH_UNIT' | translate }}</small>
+                    </td>
+                    <td class="td-action">
+                      <button
+                        type="button"
+                        class="btn-row-delete"
+                        (click)="removeFromCart(idx)"
+                        title="Remove Item"
+                      >
+                        <i class="pi pi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <!-- Beautiful Empty Cart State -->
+            <div class="pos-cart-empty">
+              <div class="empty-graphic-circle">
+                <i class="pi pi-shopping-bag"></i>
               </div>
-              <span class="col-karat"><span class="meta-karat">{{ item.gold_karat }}</span></span>
-              <span class="col-weight text-end">{{ item.gross_weight }}g</span>
-              <span class="col-price text-end item-price">{{ item.pricing.totalPrice | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
-              <span class="col-remove">
-                <button type="button" class="btn-remove" (click)="removeFromCart(idx)">
-                  <i class="pi pi-times"></i>
-                </button>
-              </span>
-            </div>
-          } @empty {
-            <div class="cart-empty">
-              <div class="empty-icon-wrap">
-                <i class="pi pi-inbox"></i>
-              </div>
+              <h4>{{ 'POS.EMPTY_CART_TITLE' | translate }}</h4>
               <p>{{ 'POS.EMPTY_CART' | translate }}</p>
             </div>
           }
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- ═══ RIGHT: Live Invoice Panel ═══ -->
-    <div class="pos-right">
-      <div class="invoice-panel">
-        <!-- Panel Head -->
-        <div class="invoice-panel-head">
-          <div>
-            <div class="invoice-panel-tag">{{ 'POS.INVOICE_SUMMARY' | translate }}</div>
-            <div class="invoice-panel-branch">Cairo HQ</div>
+    <!-- ═══ RIGHT COLUMN: Official Clean Invoice Ticket ═══ -->
+    <section class="pos-right-col">
+      <div class="official-invoice-card">
+        
+        <!-- 1. Invoice Ticket Header -->
+        <div class="invoice-ticket-header">
+          <div class="invoice-brand-row">
+            <div class="brand-logo-wrap">
+              <i class="pi pi-crown"></i>
+            </div>
+            <div class="brand-texts">
+              <h2 class="brand-title">Aurum Gold</h2>
+              <span class="brand-subtitle">{{ 'POS.TAX_INVOICE' | translate }}</span>
+            </div>
           </div>
-          <div class="invoice-panel-meta">
-            <span class="draft-badge">{{ 'POS.DRAFT' | translate }}</span>
-            <span class="invoice-panel-date">{{ today }}</span>
+          <div class="invoice-status-tag">
+            <span class="status-draft-pill">{{ 'POS.DRAFT' | translate }}</span>
+            <span class="invoice-date-text">{{ today }}</span>
           </div>
         </div>
 
-        <!-- Customer / Payment -->
-        <div class="invoice-panel-fields">
-          <div class="s-field">
-            <label>{{ 'POS.CUSTOMER' | translate }}</label>
-            <select [ngModel]="customerId()" (ngModelChange)="customerId.set($event)">
-              @for (c of customers(); track c.id) {
-                <option [value]="c.id">{{ c.name === 'Walk-in Customer' ? ('POS.MOCK_CUSTOMER' | translate) : c.name }}</option>
-              }
-            </select>
+        <!-- 2. Customer & Payment Selector -->
+        <div class="invoice-section-card">
+          <div class="invoice-form-row">
+            <div class="invoice-field">
+              <label><i class="pi pi-user"></i> {{ 'POS.CUSTOMER' | translate }}</label>
+              <div class="select-wrapper">
+                <select [ngModel]="customerId()" (ngModelChange)="customerId.set($event)">
+                  @for (c of customers(); track c.id) {
+                    <option [value]="c.id">
+                      {{ c.name === 'Walk-in Customer' ? ('POS.MOCK_CUSTOMER' | translate) : c.name + ' (' + c.phone + ')' }}
+                    </option>
+                  }
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="s-field">
-            <label>{{ 'POS.PAYMENT' | translate }}</label>
-            <select [ngModel]="paymentMethod()" (ngModelChange)="paymentMethod.set($event)">
-              <option value="cash">{{ 'POS.PAY_CASH' | translate }}</option>
-              <option value="card">{{ 'POS.PAY_CARD' | translate }}</option>
-              <option value="bank_transfer">{{ 'POS.PAY_BANK' | translate }}</option>
-            </select>
+
+          <!-- Payment Method Segmented Buttons -->
+          <div class="invoice-field mt-3">
+            <label><i class="pi pi-wallet"></i> {{ 'POS.PAYMENT' | translate }}</label>
+            <div class="payment-pills-grid">
+              <button
+                type="button"
+                class="pay-pill-btn"
+                [class.active]="paymentMethod() === 'cash'"
+                (click)="setPaymentMethod('cash')"
+              >
+                <i class="pi pi-money-bill"></i>
+                <span>{{ 'POS.PAY_CASH' | translate }}</span>
+              </button>
+
+              <button
+                type="button"
+                class="pay-pill-btn"
+                [class.active]="paymentMethod() === 'card'"
+                (click)="setPaymentMethod('card')"
+              >
+                <i class="pi pi-credit-card"></i>
+                <span>{{ 'POS.PAY_CARD' | translate }}</span>
+              </button>
+
+              <button
+                type="button"
+                class="pay-pill-btn"
+                [class.active]="paymentMethod() === 'bank_transfer'"
+                (click)="setPaymentMethod('bank_transfer')"
+              >
+                <i class="pi pi-building-columns"></i>
+                <span>{{ 'POS.PAY_BANK' | translate }}</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Buyback / Trade-in credit lines -->
-        <div class="invoice-panel-section">
-          <div class="section-label-row">
-            <span class="section-label"><i class="pi pi-sync"></i> {{ 'POS.BUYBACK' | translate }}</span>
-            <button type="button" class="btn-add-bb" (click)="addBuybackRow()">
+        <!-- 3. Scrap Gold Trade-in (Buyback / Offset) -->
+        <div class="invoice-section-card buyback-accordion">
+          <div class="buyback-head-row">
+            <div class="bb-title-wrap">
+              <i class="pi pi-sync text-gold"></i>
+              <div>
+                <span class="bb-title">{{ 'POS.BUYBACK' | translate }}</span>
+                <p class="bb-desc">{{ 'POS.BUYBACK_DESC' | translate }}</p>
+              </div>
+            </div>
+            <button type="button" class="btn-add-tradein" (click)="addBuybackRow()">
               <i class="pi pi-plus"></i>
+              <span>{{ 'POS.ADD_BB' | translate }}</span>
             </button>
           </div>
-          <div class="buyback-list">
-            @for (row of buybacks(); track $index; let idx = $index) {
-              <div class="bb-row">
-                <select [ngModel]="row.claimedKarat" (ngModelChange)="onBuybackKaratChange(idx, $event)">
-                  <option value="24K">24K</option>
-                  <option value="22K">22K</option>
-                  <option value="21K">21K</option>
-                  <option value="18K">18K</option>
-                </select>
-                <input type="number" [ngModel]="row.netWeight" (ngModelChange)="onBuybackWeightChange(idx, $event)" placeholder="g" step="0.01" />
-                <span class="bb-value">- {{ row.totalValuation | number:'1.0-0' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
-                <button type="button" class="btn-remove-bb" (click)="removeBuybackRow(idx)"><i class="pi pi-times"></i></button>
-              </div>
-            } @empty {
-              <p class="bb-empty">{{ 'POS.BB_LIST' | translate }}</p>
-            }
-          </div>
-        </div>
 
-        <div class="invoice-divider-dashed"></div>
-
-        <!-- Totals -->
-        <div class="invoice-panel-totals">
-          <div class="total-line">
-            <span>{{ 'POS.SUBTOTAL' | translate }}</span>
-            <span>{{ subtotal() | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
-          </div>
-          @if (buybackOffset() > 0) {
-            <div class="total-line discount-line">
-              <span>{{ 'POS.BB_OFFSET' | translate }}</span>
-              <span>- {{ buybackOffset() | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+          @if (buybacks().length > 0) {
+            <div class="buyback-items-table">
+              @for (row of buybacks(); track $index; let idx = $index) {
+                <div class="tradein-row">
+                  <div class="tradein-karat">
+                    <select [ngModel]="row.claimedKarat" (ngModelChange)="onBuybackKaratChange(idx, $event)">
+                      <option value="24K">24K (99.9%)</option>
+                      <option value="22K">22K (91.6%)</option>
+                      <option value="21K">21K (87.5%)</option>
+                      <option value="18K">18K (75.0%)</option>
+                    </select>
+                  </div>
+                  <div class="tradein-weight">
+                    <input
+                      type="number"
+                      [ngModel]="row.netWeight"
+                      (ngModelChange)="onBuybackWeightChange(idx, $event)"
+                      placeholder="الوزن جم"
+                      step="0.01"
+                      min="0"
+                    />
+                    <span class="input-unit">g</span>
+                  </div>
+                  <div class="tradein-val">
+                    <span class="val-minus">- {{ row.totalValuation | number:'1.0-0' }}</span>
+                    <small>{{ 'CUSTOMERS.CASH_UNIT' | translate }}</small>
+                  </div>
+                  <button type="button" class="btn-del-tradein" (click)="removeBuybackRow(idx)">
+                    <i class="pi pi-times"></i>
+                  </button>
+                </div>
+              }
             </div>
           }
-          <div class="total-line-input">
-            <label>{{ 'POS.TAX_PERCENT' | translate }}</label>
-            <input type="number" [ngModel]="taxRatePercent()" (ngModelChange)="taxRatePercent.set($event)" min="0" max="100" />
-          </div>
-          <div class="total-line-input">
-            <label>{{ 'POS.DISCOUNT_EGP' | translate }}</label>
-            <input type="number" [ngModel]="discountAmount()" (ngModelChange)="discountAmount.set($event)" min="0" />
-          </div>
-
-          <div class="invoice-divider-dashed"></div>
-
-          <div class="grand-total-line">
-            <span>{{ 'POS.TOTAL_DUE' | translate }}</span>
-            <span class="grand-amount">{{ grandTotal() | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
-          </div>
         </div>
 
-        <button type="button" class="btn-premium-action btn-checkout-full" [disabled]="isLoading()" (click)="checkout()">
+        <!-- 4. Transparent Financial Calculations -->
+        <div class="invoice-summary-sheet">
+          <div class="summary-line">
+            <span class="summary-label">{{ 'POS.SUBTOTAL' | translate }}</span>
+            <span class="summary-value">{{ subtotal() | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+          </div>
+
+          @if (buybackOffset() > 0) {
+            <div class="summary-line tradein-discount-line">
+              <span class="summary-label">
+                <i class="pi pi-sync"></i>
+                {{ 'POS.BB_OFFSET' | translate }}
+              </span>
+              <span class="summary-value">- {{ buybackOffset() | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+            </div>
+          }
+
+          <div class="summary-line-input">
+            <span class="summary-label">{{ 'POS.TAX_PERCENT' | translate }}</span>
+            <div class="mini-input-wrap">
+              <input
+                type="number"
+                [ngModel]="taxRatePercent()"
+                (ngModelChange)="taxRatePercent.set($event)"
+                min="0"
+                max="100"
+              />
+              <span class="unit-symbol">%</span>
+              <span class="calc-tax-val">+{{ taxAmount() | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+            </div>
+          </div>
+
+          <div class="summary-line-input">
+            <span class="summary-label">{{ 'POS.DISCOUNT_EGP' | translate }}</span>
+            <div class="mini-input-wrap">
+              <input
+                type="number"
+                [ngModel]="discountAmount()"
+                (ngModelChange)="discountAmount.set($event)"
+                min="0"
+              />
+              <span class="unit-symbol">{{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+            </div>
+          </div>
+
+          <!-- Dashed Perforation Line -->
+          <div class="invoice-perforation"></div>
+
+          <!-- Grand Total Display -->
+          <div class="invoice-grand-total-block">
+            <div class="grand-label-col">
+              <span class="grand-title">{{ 'POS.TOTAL_DUE' | translate }}</span>
+              <small class="grand-subtitle">شامل المصنعية والدمغة الرسمية</small>
+            </div>
+            <div class="grand-amount-col">
+              <span class="grand-number">{{ grandTotal() | number:'1.2-2' }}</span>
+              <span class="grand-currency">{{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+            </div>
+          </div>
+
+          <!-- Optional Cash Tender & Change Due -->
+          @if (paymentMethod() === 'cash' && grandTotal() > 0) {
+            <div class="cash-tender-row">
+              <div class="tender-input-box">
+                <label>{{ 'POS.CASH_RECEIVED' | translate }}</label>
+                <input
+                  type="number"
+                  [ngModel]="cashReceived()"
+                  (ngModelChange)="cashReceived.set($event)"
+                  [placeholder]="grandTotal().toString()"
+                />
+              </div>
+              @if (changeDue() > 0) {
+                <div class="change-due-box">
+                  <span class="change-label">{{ 'POS.CHANGE_DUE' | translate }}</span>
+                  <span class="change-val">{{ changeDue() | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- 5. Primary Checkout Button -->
+        <button
+          type="button"
+          class="btn-premium-action btn-complete-checkout"
+          [disabled]="isLoading() || (cartItems().length === 0 && buybacks().length === 0)"
+          (click)="checkout()"
+        >
           @if (isLoading()) {
-            <i class="pi pi-spin pi-spinner"></i> {{ 'POS.CHECKOUT' | translate }}...
+            <i class="pi pi-spin pi-spinner"></i>
+            <span>{{ 'POS.CHECKOUT' | translate }}...</span>
           } @else {
-            <i class="pi pi-check-circle"></i> {{ 'POS.CHECKOUT' | translate }}
+            <i class="pi pi-check-circle"></i>
+            <span>{{ 'POS.CHECKOUT' | translate }}</span>
           }
         </button>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
-  <!-- ─── Invoice Receipt Modal ─── -->
+  <!-- ─── 3. Official Printable Receipt / Modal ─── -->
   @if (successInvoice()) {
     <div class="modal-overlay">
-      <div class="invoice-receipt-card">
-        <div class="invoice-header">
-          <div class="invoice-brand">
-            <div class="brand-icon"><i class="pi pi-verified"></i></div>
-            <div>
-              <h2 class="brand-name">Aurum Gold</h2>
-              <p class="brand-address">Main Store Dubai – Gold Souk, Deira</p>
-            </div>
+      <div class="official-receipt-dialog">
+        
+        <!-- Receipt Top Header -->
+        <div class="receipt-header-banner">
+          <div class="receipt-logo-mark">
+            <i class="pi pi-verified"></i>
           </div>
-          <div class="invoice-meta">
-            <div class="invoice-tag">{{ 'POS.RECEIPT_TITLE' | translate }}</div>
-            <div class="invoice-num">#{{ successInvoice().invoiceNumber }}</div>
-            <div class="invoice-date">{{ today }}</div>
+          <h2 class="receipt-store-name">Aurum Gold & Jewelry</h2>
+          <p class="receipt-store-details">{{ successInvoice().branch_name || currentBranchName() }}</p>
+          <div class="receipt-tax-badge">{{ 'POS.TAX_REG_NUM' | translate }}</div>
+        </div>
+
+        <div class="receipt-dashed-divider"></div>
+
+        <!-- Receipt Meta Info -->
+        <div class="receipt-meta-grid">
+          <div class="meta-item">
+            <span class="meta-k">{{ 'POS.INVOICE_NUM' | translate }}:</span>
+            <span class="meta-v"><strong>{{ successInvoice().invoiceNumber || successInvoice().invoice_number }}</strong></span>
+          </div>
+          <div class="meta-item text-end">
+            <span class="meta-k">{{ 'POS.DATE' | translate }}:</span>
+            <span class="meta-v">{{ today }} {{ currentTime }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-k">{{ 'POS.CUSTOMER' | translate }}:</span>
+            <span class="meta-v">{{ successInvoice().customerName || successInvoice().customer_name }}</span>
+          </div>
+          <div class="meta-item text-end">
+            <span class="meta-k">{{ 'POS.PAYMENT' | translate }}:</span>
+            <span class="meta-v">
+              {{ paymentMethod() === 'cash' ? ('POS.PAY_CASH' | translate) : paymentMethod() === 'card' ? ('POS.PAY_CARD' | translate) : ('POS.PAY_BANK' | translate) }}
+            </span>
           </div>
         </div>
 
-        <div class="invoice-divider"></div>
+        <div class="receipt-dashed-divider"></div>
 
-        <div class="invoice-info-row">
-          <div class="info-block">
-            <span class="info-label">{{ 'POS.CUSTOMER' | translate }}</span>
-            <span class="info-value">{{ successInvoice().customerName || ('POS.MOCK_CUSTOMER' | translate) }}</span>
-          </div>
-          <div class="info-block">
-            <span class="info-label">{{ 'POS.PAYMENT' | translate }}</span>
-            <span class="info-value">{{ paymentMethod() === 'cash' ? ('POS.PAY_CASH' | translate) : paymentMethod() === 'card' ? ('POS.PAY_CARD' | translate) : ('POS.PAY_BANK' | translate) }}</span>
-          </div>
-        </div>
-
-        <div class="invoice-items-section">
-          <table class="invoice-table">
+        <!-- Receipt Itemized Table -->
+        <div class="receipt-table-wrap">
+          <table class="receipt-table">
             <thead>
               <tr>
-                <th class="col-num">#</th>
+                <th>#</th>
                 <th>{{ 'POS.COL_ITEM' | translate }}</th>
                 <th>{{ 'POS.COL_KARAT' | translate }}</th>
                 <th class="text-end">{{ 'INVENTORY.COL_WEIGHT' | translate }}</th>
@@ -254,60 +500,79 @@
             <tbody>
               @for (item of cartItems(); track item.barcode; let idx = $index) {
                 <tr>
-                  <td class="col-num">{{ idx + 1 }}</td>
+                  <td>{{ idx + 1 }}</td>
                   <td>
-                    <span class="line-name">{{ item.product_name }}</span>
-                    <span class="line-barcode">{{ item.barcode }}</span>
+                    <div class="receipt-item-name">{{ item.product_name }}</div>
+                    <code class="receipt-item-sku">{{ item.barcode }}</code>
                   </td>
-                  <td><span class="karat-badge">{{ item.gold_karat }}</span></td>
+                  <td><span class="receipt-karat">{{ item.gold_karat }}</span></td>
                   <td class="text-end">{{ item.gross_weight }}g</td>
-                  <td class="text-end line-price">{{ item.pricing.totalPrice | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</td>
+                  <td class="text-end receipt-line-total">{{ item.pricing.totalPrice | number:'1.2-2' }}</td>
                 </tr>
               }
             </tbody>
           </table>
         </div>
 
-        <div class="invoice-totals">
-          <div class="total-line">
-            <span>{{ 'POS.SUBTOTAL' | translate }}</span>
-            <span>{{ successInvoice().subtotal | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+        <!-- Buybacks if any -->
+        @if (buybacks().length > 0) {
+          <div class="receipt-buybacks-section">
+            <div class="receipt-section-title">{{ 'POS.BUYBACK_ITEMS' | translate }}:</div>
+            @for (b of buybacks(); track $index) {
+              <div class="receipt-bb-line">
+                <span>{{ b.claimedKarat }} ({{ b.netWeight }}g)</span>
+                <span class="bb-val">-{{ b.totalValuation | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+              </div>
+            }
           </div>
-          @if (successInvoice().taxAmount > 0) {
-            <div class="total-line">
-              <span>{{ 'POS.TAX_PERCENT' | translate }} ({{ taxRatePercent() }}%)</span>
-              <span>{{ successInvoice().taxAmount | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+        }
+
+        <div class="receipt-dashed-divider"></div>
+
+        <!-- Receipt Totals -->
+        <div class="receipt-totals-sheet">
+          <div class="r-line">
+            <span>{{ 'POS.SUBTOTAL' | translate }}</span>
+            <span>{{ successInvoice().subtotal || subtotal() | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+          </div>
+          @if (successInvoice().taxAmount > 0 || taxAmount() > 0) {
+            <div class="r-line">
+              <span>{{ 'POS.TAX' | translate }} ({{ taxRatePercent() }}%)</span>
+              <span>+{{ (successInvoice().taxAmount || taxAmount()) | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
             </div>
           }
-          @if (successInvoice().discountAmount > 0) {
-            <div class="total-line discount-line">
+          @if (successInvoice().discountAmount > 0 || discountAmount() > 0) {
+            <div class="r-line text-danger">
               <span>{{ 'POS.DISCOUNT_EGP' | translate }}</span>
-              <span>- {{ successInvoice().discountAmount | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+              <span>-{{ (successInvoice().discountAmount || discountAmount()) | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
             </div>
           }
-          @if (successInvoice().buybackOffset > 0) {
-            <div class="total-line discount-line">
+          @if (successInvoice().buybackOffset > 0 || buybackOffset() > 0) {
+            <div class="r-line text-amber">
               <span>{{ 'POS.BB_OFFSET' | translate }}</span>
-              <span>- {{ successInvoice().buybackOffset | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+              <span>-{{ (successInvoice().buybackOffset || buybackOffset()) | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
             </div>
           }
-          <div class="invoice-divider-dashed"></div>
-          <div class="grand-total-line">
+          <div class="receipt-dashed-divider"></div>
+          <div class="r-grand-line">
             <span>{{ 'POS.TOTAL_DUE' | translate }}</span>
-            <span class="grand-amount">{{ successInvoice().netCashPaid | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
+            <span class="r-grand-val">{{ (successInvoice().netCashPaid || grandTotal()) | number:'1.2-2' }} {{ 'CUSTOMERS.CASH_UNIT' | translate }}</span>
           </div>
         </div>
 
-        <div class="invoice-footer">
+        <div class="receipt-footer-msg">
           <p>{{ 'POS.THANK_YOU' | translate }}</p>
         </div>
 
-        <div class="invoice-actions">
-          <button type="button" class="btn-receipt-print" onclick="window.print()">
-            <i class="pi pi-print"></i> {{ 'POS.PRINT_RECEIPT' | translate }}
+        <!-- Dialog Action Buttons -->
+        <div class="receipt-actions-row">
+          <button type="button" class="btn-receipt-action btn-print" onclick="window.print()">
+            <i class="pi pi-print"></i>
+            <span>{{ 'POS.PRINT_RECEIPT' | translate }}</span>
           </button>
-          <button type="button" class="btn-receipt-close" (click)="resetPOS()">
-            <i class="pi pi-times"></i> {{ 'POS.CLOSE' | translate }}
+          <button type="button" class="btn-receipt-action btn-close-modal" (click)="resetPOS()">
+            <i class="pi pi-check"></i>
+            <span>{{ 'POS.CLOSE' | translate }}</span>
           </button>
         </div>
       </div>

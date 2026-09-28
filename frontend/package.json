@@ -2,7 +2,11 @@
   "name": "@frontend/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start": "nx serve gold-erp",
+    "build": "nx build gold-erp --configuration=production",
+    "lint": "nx lint gold-erp"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~21.2.0",

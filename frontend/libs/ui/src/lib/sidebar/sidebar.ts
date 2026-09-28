@@ -2,8 +2,7 @@ import { ChangeDetectionStrategy, Component, HostListener, inject, signal, compu
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RouterModule, Router } from '@angular/router';
-import { ThemeService, MAIN_NAV_ITEMS, BOTTOM_NAV_ITEMS } from '@frontend/core';
-import { AuthService } from '@frontend/auth';
+import { ThemeService, MAIN_NAV_ITEMS, BOTTOM_NAV_ITEMS, AuthService } from '@frontend/core';
 import { BrandLogo } from '../brand-logo/brand-logo';
 import { LayoutService } from '../services/layout.service';
 
