@@ -100,7 +100,9 @@
 
       <!-- Karat custom template -->
       <ng-template appCellTemplate="karat" let-item>
-        <span class="karat-badge">{{ item.gold_karat }}</span>
+        <span class="karat-badge" [class.karat-24k]="item.gold_karat === '24K'" [class.karat-22k]="item.gold_karat === '22K'" [class.karat-21k]="item.gold_karat === '21K'" [class.karat-18k]="item.gold_karat === '18K'">
+          {{ item.gold_karat }}
+        </span>
       </ng-template>
 
       <!-- Gross Weight custom template -->

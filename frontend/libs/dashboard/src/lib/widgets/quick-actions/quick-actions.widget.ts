@@ -71,38 +71,55 @@ import { DashboardWidget } from '../dashboard-widget';
     .actions-grid {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 0.65rem;
+      gap: 0.85rem;
     }
     .action-btn {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.45rem;
-      padding: 0.75rem 0.35rem;
-      border-radius: 10px;
+      gap: 0.6rem;
+      padding: 1rem 0.5rem;
+      border-radius: var(--border-radius-md);
       border: 1px solid var(--border-color);
       background: var(--color-surface);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       color: var(--color-text-muted);
       text-decoration: none;
-      font-size: 0.7rem;
-      font-weight: 600;
+      font-size: 0.775rem;
+      font-weight: 700;
       text-align: center;
-      transition: all 0.15s ease;
+      box-shadow: var(--box-shadow-sm);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
     }
     .action-btn:hover {
-      color: var(--color-primary);
+      color: #F8FAFC;
       border-color: var(--color-primary);
-      background: var(--color-primary-glow);
+      background: rgba(212, 175, 55, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.6), 0 0 16px rgba(212, 175, 55, 0.12);
     }
     .action-icon-wrap {
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.3);
       color: var(--color-primary);
-      transition: transform 0.2s ease;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
     .action-btn:hover .action-icon-wrap {
-      transform: translateY(-2px);
+      transform: scale(1.1);
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.35) 0%, rgba(212, 175, 55, 0.15) 100%);
+      border-color: #D4AF37;
+      color: #FFF6D6;
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.3);
     }
     @media (max-width: 1200px) { .actions-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 768px) { .actions-grid { grid-template-columns: repeat(2, 1fr); } }

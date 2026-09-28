@@ -16,31 +16,31 @@ export interface ThemeConfig {
 }
 
 export const FONT_OPTIONS_EN: FontOption[] = [
-  { label: 'Dubai', value: 'Dubai', google: '' },
-  { label: 'Poppins', value: 'Poppins', google: 'Poppins:wght@300;400;500;600;700' },
+  { label: 'Outfit (Luxury)', value: 'Outfit', google: 'Outfit:wght@300;400;500;600;700;800' },
+  { label: 'Plus Jakarta Sans', value: 'Plus Jakarta Sans', google: 'Plus+Jakarta+Sans:wght@300;400;500;600;700;800' },
   { label: 'Inter', value: 'Inter', google: 'Inter:wght@300;400;500;600;700' },
-  { label: 'Play', value: 'Play', google: 'Play:wght@400;700' },
+  { label: 'Poppins', value: 'Poppins', google: 'Poppins:wght@300;400;500;600;700' },
   { label: 'Montserrat', value: 'Montserrat', google: 'Montserrat:wght@300;400;500;600;700' },
-  { label: 'Lora', value: 'Lora', google: 'Lora:wght@400;500;600;700' },
+  { label: 'Dubai', value: 'Dubai', google: '' },
 ];
 
 export const FONT_OPTIONS_AR: FontOption[] = [
-  { label: 'Dubai', value: 'Dubai', google: '' },
-  { label: 'Cairo', value: 'Cairo', google: 'Cairo:wght@300;400;500;600;700' },
-  { label: 'Tajawal', value: 'Tajawal', google: 'Tajawal:wght@300;400;500;600;700' },
+  { label: 'Cairo (Modern)', value: 'Cairo', google: 'Cairo:wght@300;400;500;600;700;800' },
+  { label: 'Tajawal', value: 'Tajawal', google: 'Tajawal:wght@300;400;500;600;700;800' },
   { label: 'Almarai', value: 'Almarai', google: 'Almarai:wght@300;400;700;800' },
   { label: 'Noto Sans Arabic', value: 'Noto Sans Arabic', google: 'Noto+Sans+Arabic:wght@300;400;500;600;700' },
+  { label: 'Dubai', value: 'Dubai', google: '' },
 ];
 
 const DEFAULT_THEME: ThemeConfig = {
-  primaryColor: '#a27c38',
-  backgroundColor: '#f8fafc',
+  primaryColor: '#D4AF37',
+  backgroundColor: '#090B10',
   logoUrl: null,
-  fontFamilyEn: 'Dubai',
-  fontFamilyAr: 'Dubai',
+  fontFamilyEn: 'Outfit',
+  fontFamilyAr: 'Cairo',
 };
 
-const STORAGE_KEY = 'aurum_theme_config_v2';
+const STORAGE_KEY = 'aurum_theme_config_v3';
 
 @Injectable({
   providedIn: 'root',
@@ -107,25 +107,27 @@ export class ThemeService {
     root.style.setProperty('--color-bg', theme.backgroundColor);
 
     if (isLight) {
-      // Light modern theme variables
+      // Light Luxury (Champagne & Silk)
       root.style.setProperty('--color-surface', '#ffffff');
-      root.style.setProperty('--color-surface-hover', '#f1f5f9');
+      root.style.setProperty('--color-surface-hover', '#f8fafc');
+      root.style.setProperty('--color-surface-card', '#ffffff');
       root.style.setProperty('--color-text', '#0f172a');
       root.style.setProperty('--color-text-muted', '#64748b');
-      root.style.setProperty('--border-color', '#e2e8f0');
-      root.style.setProperty('--border-color-hover', '#cbd5e1');
-      root.style.setProperty('--color-primary-glow', 'rgba(162, 124, 56, 0.08)');
-      root.style.setProperty('--box-shadow-premium', '0 10px 30px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02)');
+      root.style.setProperty('--border-color', 'rgba(212, 175, 55, 0.2)');
+      root.style.setProperty('--border-color-hover', 'rgba(212, 175, 55, 0.45)');
+      root.style.setProperty('--color-primary-glow', 'rgba(212, 175, 55, 0.12)');
+      root.style.setProperty('--box-shadow-premium', '0 12px 32px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(212, 175, 55, 0.04)');
     } else {
-      // Dark modern theme variables
-      root.style.setProperty('--color-surface', 'rgba(20, 20, 20, 0.7)');
-      root.style.setProperty('--color-surface-hover', 'rgba(32, 32, 32, 0.85)');
-      root.style.setProperty('--color-text', '#f3f4f6');
-      root.style.setProperty('--color-text-muted', '#9ca3af');
-      root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.08)');
-      root.style.setProperty('--border-color-hover', 'rgba(255, 255, 255, 0.16)');
-      root.style.setProperty('--color-primary-glow', 'rgba(232, 197, 71, 0.12)');
-      root.style.setProperty('--box-shadow-premium', '0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.01)');
+      // Dark Luxury (Obsidian & Radiant Gold)
+      root.style.setProperty('--color-surface', 'rgba(15, 18, 26, 0.82)');
+      root.style.setProperty('--color-surface-hover', 'rgba(25, 30, 44, 0.9)');
+      root.style.setProperty('--color-surface-card', 'linear-gradient(145deg, rgba(18, 23, 33, 0.85) 0%, rgba(10, 13, 19, 0.95) 100%)');
+      root.style.setProperty('--color-text', '#f8fafc');
+      root.style.setProperty('--color-text-muted', '#94a3b8');
+      root.style.setProperty('--border-color', 'rgba(212, 175, 55, 0.14)');
+      root.style.setProperty('--border-color-hover', 'rgba(212, 175, 55, 0.38)');
+      root.style.setProperty('--color-primary-glow', 'rgba(212, 175, 55, 0.18)');
+      root.style.setProperty('--box-shadow-premium', '0 16px 40px -8px rgba(0, 0, 0, 0.7), 0 0 20px rgba(212, 175, 55, 0.05)');
     }
 
     const enStack = `'${theme.fontFamilyEn}', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`;

@@ -164,25 +164,25 @@
 
 .btn-login-gold {
   width: 100%;
-  padding: 0.9rem;
-  background: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  padding: 0.95rem;
+  background: linear-gradient(135deg, #D4AF37 0%, #F3D068 50%, #C49726 100%);
+  border: none;
   border-radius: var(--border-radius-md);
-  color: #ffffff;
+  color: #0A0D14;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: var(--transition-smooth);
-  box-shadow: 0 4px 15px var(--color-primary-glow);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.3);
 
   &:hover:not(:disabled) {
-    background: var(--color-primary-hover);
-    border-color: var(--color-primary-hover);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, #F3D068 0%, #FFE58F 50%, #D4AF37 100%);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.45);
+    transform: translateY(-2px);
   }
 
   &:active:not(:disabled) {
@@ -190,7 +190,7 @@
   }
 
   &:disabled {
-    opacity: 0.75;
+    opacity: 0.7;
     cursor: not-allowed;
   }
 
